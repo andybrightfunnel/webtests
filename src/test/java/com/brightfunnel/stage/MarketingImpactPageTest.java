@@ -19,8 +19,8 @@ import static org.junit.Assert.assertTrue;
 public class MarketingImpactPageTest extends TestCase {
 
 
-    public static final String USER_NAME = "andy@brightfunnel.com";
-    public static final String PASSWORD = "Time2poop!";
+    public static final String USER_NAME = "ryan+test@brightfunnel.com";
+    public static final String PASSWORD = "BrightFunnelDemo1!";
     public static final int ACCEPTABLE_DIFFERENCE_AMOUNT = 200_000;
     private WebDriver driver;
     private StringBuffer verificationErrors = new StringBuffer();
