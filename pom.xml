@@ -10,10 +10,6 @@
 
     <properties>
         <spring.version>3.2.0.RELEASE</spring.version>
-        <spring.security.version>3.1.4.RELEASE</spring.security.version>
-        <jetty.version>8.0.1.v20110908</jetty.version>
-        <jetty.port>65111</jetty.port>
-        <jetty.stopPort>65112</jetty.stopPort>
         <seleniumn.version>2.44.0</seleniumn.version>
     </properties>
 
@@ -35,6 +31,7 @@
                     <target>1.7</target>
                     <includes>
                         <include>src/test/java/**/*.java</include>
+                        <include>src/tests/java/**/*.java</include>
                     </includes>
                 </configuration>
             </plugin>
@@ -82,22 +79,7 @@
             <artifactId>spring-webmvc</artifactId>
             <version>${spring.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-            <version>${spring.security.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-config</artifactId>
-            <version>${spring.security.version}</version>
-        </dependency>
 
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-taglibs</artifactId>
-            <version>${spring.security.version}</version>
-        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -109,24 +91,6 @@
             <artifactId>selenium-java</artifactId>
             <version>${seleniumn.version}</version>
         </dependency>
-
-        <!--<dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-firefox-driver</artifactId>
-            <version>2.0.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-safari-driver</artifactId>
-            <version>3.4.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>htmlunit-driver</artifactId>
-            <version>2.24</version>
-        </dependency>-->
 
         <dependency>
             <groupId>org.testng</groupId>

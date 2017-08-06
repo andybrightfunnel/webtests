@@ -6,21 +6,21 @@ import com.brightfunnel.pages.MarketingAnalyticsPage;
 import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
-import static junit.framework.TestCase.fail;
-import static org.junit.Assert.assertTrue;
-
+/**
+ * This is for stage testing the Marketing Impact Page
+ */
 public class MarketingImpactPageTest extends TestCase {
 
 
-    public static final String USER_NAME = "ryan+test@brightfunnel.com";
-    public static final String PASSWORD = "BrightFunnelDemo1!";
+    public static final String USER_NAME = "YOUR_ACCOUNT@brightfunnel.com";  // TODO: update to use your account/pw
+    public static final String PASSWORD = "YOUR PASSWORD";
     public static final int ACCEPTABLE_DIFFERENCE_AMOUNT = 200_000;
     private WebDriver driver;
     private StringBuffer verificationErrors = new StringBuffer();
@@ -31,9 +31,14 @@ public class MarketingImpactPageTest extends TestCase {
         driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
     }
 
+    /*
+        This test will load the marketing impact page on stage, then open a tab and load the same page on prod
+        and compare the sum totals at the bottom of the page and will fail if there is a large difference between
+        the two environments.
+     */
     public void testMarketingImpactByMonthTotals() throws Exception {
         System.out.println("**");
-        // open op homepage on stage
+        // open op homepage on stageØ
         HomePage stageHomePage = new HomePage(driver, Environments.STAGE);
         stageHomePage.navigateTo();
         stageHomePage.login(USER_NAME, PASSWORD);
