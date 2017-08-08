@@ -1,5 +1,5 @@
 This is a webtest framework using Selenium Webdriver. It is built with Java and managed by Apache Maven. It is designed
-to facility rapid development and for ease of use. Here is a brief explanation of the package structure:
+to facilitate rapid development and for ease of use. Here is a brief explanation of the package structure:
 
 src/test/java/com/brightfunnel
 
