@@ -19,8 +19,10 @@ Setup
 * Add Chrome driver to your path if you with to use ChromeDriver instead of HtmlUnitDriver
     export CHROME_DRIVER_HOME='/path-to-your-webtests-dir/drivers/chromedriver'
     export PATH="$PATH:$CHROME_DRIVER_HOME"
-* update the username and password used in the tests to use a BF god mode user.
-   TODO: We should create a dedicated BF god mode user to be used for webtests
+* Add BF_USERNAME and BF_PASSWORD environment variables.
+    ** add to your .bashrc file :
+      export BF_USERNAME="your bf email"
+      export BF_PASSWORD="your bf password"
 
 
 

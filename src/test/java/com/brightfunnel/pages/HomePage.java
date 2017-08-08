@@ -27,15 +27,34 @@ public class HomePage extends BasePage{
     public void login(String userName, String password){
 
         driver.get(baseUrl + "/login/auth");
+        WebElement element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
+                until(ExpectedConditions.visibilityOfElementLocated(By.id("password")));
+
         driver.findElement(By.id("password")).clear();
         driver.findElement(By.id("password")).sendKeys(password);
         driver.findElement(By.id("username")).clear();
         driver.findElement(By.id("username")).sendKeys(userName);
         driver.findElement(By.id("loginButton")).click();
 
+        element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
+                until(ExpectedConditions.visibilityOfElementLocated(By.id("heading")));
+        assertTrue("Should be on the home dashboard page",
+                driver.getCurrentUrl().contains("/#/dashboard"));
+    }
+
+    public void loginAsOrg(WebDriver driver, int orgId){
+
+        String baseUrl = super.getCurrentUrlBase();
+        String url = baseUrl + "/LoginAs?username=org" + orgId;
+
+        driver.get(url);
         WebElement element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
                 until(ExpectedConditions.visibilityOfElementLocated(By.id("heading")));
         assertTrue("Should be on the home dashboard page",
-                driver.getCurrentUrl().contains("brightfunnel.com/#/dashboard"));
+                driver.getCurrentUrl().contains("/#/dashboard"));
+    }
+
+    public void logout(WebDriver driver){
+        driver.get(this.getCurrentUrlBase() + "logout");
     }
 }

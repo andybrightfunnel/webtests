@@ -1,6 +1,7 @@
 package com.brightfunnel.pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -29,32 +30,32 @@ public class MarketingAnalyticsPage extends BasePage {
         // todo: add asserts to verify page loads correctly
     }
 
+    public void changeAttributionModel(String period, String opptyType, String modelType){
 
+        StringBuilder urlBuilder = new StringBuilder();
+        urlBuilder.append(this.getCurrentUrlBase());
 
-    public void changeAttributionModel(){
-        // TODO: parameterize this method to allow for different settings
-        driver.get(getCurrentUrlBase() +
-                "#/discover/revenue-and-pipeline/marketing-impact?period=month&type=actual&modelType=even&opptyType=oppty");
+        String url = String.format("%s#/discover/revenue-and-pipeline/marketing-impact?period=%s&type=actual&opptyType=%s&modelType=%s",
+                this.getCurrentUrlBase(), period, opptyType, modelType );
+
+        driver.get(url);
+
+        try {
+            WebElement element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
+                    until(ExpectedConditions.visibilityOfElementLocated(By.xpath("id('totalRevenueTable')/tfoot//td[3]")));
+
+        }catch(TimeoutException te){
+            te.printStackTrace();
+            driver.get(url);
+            WebElement element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
+                    until(ExpectedConditions.visibilityOfElementLocated(By.xpath("id('totalRevenueTable')/tfoot//td[3]")));
+        }
 
     }
 
-    public BigInteger getPipelineTotal() {
-        String amtStr = driver.findElement(By.xpath("id('totalRevenueTable')/tfoot//td[3]")).getText();
-        return new BigInteger(amtStr.replaceAll("[$,]",""));
-    }
-
-    public BigInteger getOpptysCreatedTotal() {
-        String amtStr = driver.findElement(By.xpath("id('totalRevenueTable')/tfoot//td[4]")).getText();
-        return new BigInteger(amtStr.replaceAll("[$,]",""));
-    }
-
-    public BigInteger getMIPipelineTotal() {
-        String amtStr = driver.findElement(By.xpath("id('totalRevenueTable')/tfoot//td[5]")).getText();
-        return new BigInteger(amtStr.replaceAll("[$,]",""));
-    }
-
-    public BigInteger getOpptysInfluencedTotal() {
-        String amtStr = driver.findElement(By.xpath("id('totalRevenueTable')/tfoot//td[6]")).getText();
+    public BigInteger getRowData(int row, int col) {
+        String xpath = String.format("id('totalRevenueTable')//tr[%s]/td[%s]", row, col);
+        String amtStr = driver.findElement(By.xpath(xpath)).getText();
         return new BigInteger(amtStr.replaceAll("[$,]",""));
     }
 }

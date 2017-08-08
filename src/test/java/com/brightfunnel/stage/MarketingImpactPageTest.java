@@ -6,11 +6,15 @@ import com.brightfunnel.pages.MarketingAnalyticsPage;
 import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -19,85 +23,139 @@ import java.util.concurrent.TimeUnit;
 public class MarketingImpactPageTest extends TestCase {
 
 
-    public static final String USER_NAME = "YOUR_ACCOUNT@brightfunnel.com";  // TODO: update to use your account/pw
-    public static final String PASSWORD = "YOUR PASSWORD";
+    public static final int NUM_ROWS = 5;
+    public static String USER_NAME;
+    public static String PASSWORD;
     public static final int ACCEPTABLE_DIFFERENCE_AMOUNT = 200_000;
+
     private WebDriver driver;
     private StringBuffer verificationErrors = new StringBuffer();
+    String[] periods = { "quarter", "monthly"};
+    String[] opptyTypes = { "deal", "oppty"};
+    String[] modelTypes = { "sourced", "last", "even", "custom"};
 
     @Before
     public void setUp() throws Exception {
         driver = new ChromeDriver();
         driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+
+        USER_NAME = System.getenv("BF_USERNAME");
+        PASSWORD = System.getenv("BF_PASSWORD");
+        assertNotNull(USER_NAME, "Unable to retrieve username from system environment variable: BF_USERNAME");
+        assertNotNull(PASSWORD, "Unable to retrieve password from system environment variable: BF_PASSWORD");
+
     }
 
-    /*
-        This test will load the marketing impact page on stage, then open a tab and load the same page on prod
-        and compare the sum totals at the bottom of the page and will fail if there is a large difference between
-        the two environments.
-     */
-    public void testMarketingImpactByMonthTotals() throws Exception {
-        System.out.println("**");
-        // open op homepage on stageØ
-        HomePage stageHomePage = new HomePage(driver, Environments.STAGE);
-        stageHomePage.navigateTo();
-        stageHomePage.login(USER_NAME, PASSWORD);
+    public void testMarketingImpact() throws Exception{
 
-        // go to the marketing analytics page
-        MarketingAnalyticsPage stageMarketingAnalyticsPage = new MarketingAnalyticsPage(driver, Environments.STAGE);
-        stageMarketingAnalyticsPage.navigateTo();
+        int[] orgIds = {12};
+        List<String> failedOrgs = new ArrayList<>();
+
+        for(int i=0; i < orgIds.length; i++){
+            int orgId = orgIds[i];
+            try{
+                for(String periodType : periods){
+                    for(String opptyType : opptyTypes){
+                        for(String modelType : modelTypes){
+                            String result = testMarketingImpactTotals(orgId, periodType, opptyType, modelType);
+                            if(result.length() > 0)
+                                failedOrgs.add("[Org: " + orgId + "] - result: " + result);
+                        }
+                    }
+                }
+            }catch(Exception e){
+                e.printStackTrace();
+                failedOrgs.add("[Org: " + orgId + "] - error: " + e.getMessage());
+            }
+
+            if(i > 1)
+                break;
+        }
+
+        assertTrue("Marketing Impact totals differ for at least one org. Results[" + listToString(failedOrgs),
+                failedOrgs.isEmpty());
+
+    }
+
+    private String listToString(List<String> results) {
+        StringBuffer sb = new StringBuffer();
+
+        for(String result : results)
+            sb.append(result);
+
+        return sb.toString();
+    }
+
+    private String testMarketingImpactTotals(int orgId, String periodType, String opptyType, String modelType) {
+
+        System.out.println("Starting stage test for marketing analytics page totals for orgId: " + orgId +
+            ", period: " + periodType + ", opptyType: " + opptyType + ", modelType: " + modelType);
+        HomePage homePage = new HomePage(driver, Environments.STAGE);
+        homePage.navigateTo();
+        homePage.login(USER_NAME, PASSWORD);
+        homePage.loginAsOrg(driver, orgId);
+
+        MarketingAnalyticsPage marketingAnalyticsPage = new MarketingAnalyticsPage(driver, Environments.STAGE);
+        marketingAnalyticsPage.navigateTo();
 
         // change attribution model to single-touch first touch
-        stageMarketingAnalyticsPage.changeAttributionModel();
+        marketingAnalyticsPage.changeAttributionModel(periodType, opptyType, modelType);
 
-        // pull some totals from the marketing analytics page
-        BigInteger stagePipeLineTotal = stageMarketingAnalyticsPage.getPipelineTotal();
-        BigInteger stageOpptysCreatedTotal = stageMarketingAnalyticsPage.getOpptysCreatedTotal();
-        BigInteger stageMIPipelineTotal = stageMarketingAnalyticsPage.getMIPipelineTotal();
-        BigInteger stageMOpptyInfluencedTotal = stageMarketingAnalyticsPage.getOpptysInfluencedTotal();
+        // pull marketing impact data for a few of the first rows
+        List<MIDataRow> stageData = new LinkedList<>();
+        for(int row =1; row < NUM_ROWS; row++){
+            String xpath = String.format("id('totalRevenueTable')//tr[%s]/td[%s]", row, 2);
+            String quarter = driver.findElement(By.xpath(xpath)).getText();
+            BigInteger stagePipeLineTotal = marketingAnalyticsPage.getRowData(row, 3 );
+            BigInteger stageOpptysCreatedTotal = marketingAnalyticsPage.getRowData(row, 4 );
+            BigInteger stageMIPipelineTotal = marketingAnalyticsPage.getRowData(row, 5 );
+            BigInteger stageMOpptyInfluencedTotal = marketingAnalyticsPage.getRowData(row, 6 );
+            stageData.add(new MIDataRow(quarter,stagePipeLineTotal, stageOpptysCreatedTotal,
+                    stageMIPipelineTotal, stageMOpptyInfluencedTotal));
+        }
 
         // open up homepage on prod
-        HomePage prodHomePage = new HomePage(driver, Environments.PROD);
-        prodHomePage.openNewTab();
-        prodHomePage.navigateTo();
-        prodHomePage.login(USER_NAME, PASSWORD);
+        homePage.logout(driver);
+        homePage = new HomePage(driver, Environments.PROD);
+        homePage.navigateTo();
+        homePage.login(USER_NAME, PASSWORD);
+        homePage.loginAsOrg(driver, orgId);
 
         // go to the marketing analytics page
-        MarketingAnalyticsPage prodMarketingAnalyticsPage = new MarketingAnalyticsPage(driver, Environments.DEV);
-        prodMarketingAnalyticsPage.navigateTo();
+        marketingAnalyticsPage = new MarketingAnalyticsPage(driver, Environments.PROD);
+        marketingAnalyticsPage.navigateTo();
 
         // change attribution model to single-touch first touch
-        prodMarketingAnalyticsPage.changeAttributionModel();
+        marketingAnalyticsPage.changeAttributionModel(periodType, opptyType, modelType);
+
+        List<MIDataRow> prodData = new LinkedList<>();
+        for(int row = 1; row < NUM_ROWS; row++){
+            String xpath = String.format("id('totalRevenueTable')//tr[%s]/td[%s]", row, 2);
+            String quarter = driver.findElement(By.xpath(xpath)).getText();
+            BigInteger stagePipeLineTotal = marketingAnalyticsPage.getRowData(row, 3 );
+            BigInteger stageOpptysCreatedTotal = marketingAnalyticsPage.getRowData(row, 4 );
+            BigInteger stageMIPipelineTotal = marketingAnalyticsPage.getRowData(row, 5 );
+            BigInteger stageMOpptyInfluencedTotal = marketingAnalyticsPage.getRowData(row, 6 );
+            prodData.add(new MIDataRow(quarter,stagePipeLineTotal, stageOpptysCreatedTotal,
+                    stageMIPipelineTotal, stageMOpptyInfluencedTotal));
+        }
 
 
-        // verify the totals section at the bottom
-        BigInteger prodPipeLineTotal = prodMarketingAnalyticsPage.getPipelineTotal();
-        BigInteger prodOpptysCreatedTotal = prodMarketingAnalyticsPage.getOpptysCreatedTotal();
-        BigInteger prodMIPipelineTotal = prodMarketingAnalyticsPage.getMIPipelineTotal();
-        BigInteger prodMOpptyInfluencedTotal = prodMarketingAnalyticsPage.getOpptysInfluencedTotal();
+        // go through each row and compare prod vs stage
+        StringBuffer comparisonResult = new StringBuffer();
+        for(int i=0; i < NUM_ROWS; i++){
+            MIDataRow stage = stageData.get(0);
+            MIDataRow prod = prodData.get(0);
 
-        double pipeLineTotalsDiff = Math.abs(stagePipeLineTotal.doubleValue() - prodPipeLineTotal.doubleValue());
-        double opptysCreatedTotalsDiff = Math.abs(stageOpptysCreatedTotal.doubleValue()
-                - prodOpptysCreatedTotal.doubleValue());
-        double miPipelineTotalsDiff = Math.abs(stageMIPipelineTotal.doubleValue() - prodMIPipelineTotal.doubleValue());
-        double opptysInfluencedTotalsDiff = Math.abs(stageMOpptyInfluencedTotal.doubleValue()
-                - prodMOpptyInfluencedTotal.doubleValue());
+            String rowCompare =  stage.compareTo(prod);
+            if(rowCompare.length() > 0)
+                comparisonResult.append("\t").append(rowCompare).append("\n");
 
-       // assertTrue("pipeline totals differ by too much. Stage: " + stagePipeLineTotal + ", prod: " + prodPipeLineTotal,
-        //        pipeLineTotalsDiff <= ACCEPTABLE_DIFFERENCE_AMOUNT);
-        assertTrue("opptys created totals differ by too much. Stage: " + stageOpptysCreatedTotal + ", prod: "
-                        + prodOpptysCreatedTotal,
-                opptysCreatedTotalsDiff <= ACCEPTABLE_DIFFERENCE_AMOUNT);
-        assertTrue("MI Pipeine totals differ by too much. Stage: " + stageMIPipelineTotal + ", prod: "
-                        + prodMIPipelineTotal,
-                miPipelineTotalsDiff <= ACCEPTABLE_DIFFERENCE_AMOUNT);
-        assertTrue("opptys influenced totals differ by too much. Stage: " + stageMOpptyInfluencedTotal + ", prod: "
-                        + prodMOpptyInfluencedTotal,
-                opptysInfluencedTotalsDiff <= ACCEPTABLE_DIFFERENCE_AMOUNT);
+        }
 
-
-
+        return comparisonResult.toString();
     }
+
 
     @After
     public void tearDown() throws Exception {
@@ -108,6 +166,103 @@ public class MarketingImpactPageTest extends TestCase {
         }
     }
 
+
+    class MIDataRow{
+        String quarter;
+        BigInteger revenue;
+        BigInteger opptysCreatedTotal;
+        BigInteger miPipelineTotal;
+        BigInteger marketingOpptyInfluencedTotal;
+
+        public MIDataRow(String quarter, BigInteger revenue, BigInteger stageOpptysCreatedTotal,
+                         BigInteger stageMIPipelineTotal, BigInteger stageMOpptyInfluencedTotal) {
+            this.quarter = quarter;
+            this.revenue = revenue;
+            this.opptysCreatedTotal = stageOpptysCreatedTotal;
+            this.miPipelineTotal = stageMIPipelineTotal;
+            this.marketingOpptyInfluencedTotal = stageMOpptyInfluencedTotal;
+        }
+
+        public String compareTo(MIDataRow otherRow){
+            StringBuffer comparisonResult = new StringBuffer();
+
+            if(!this.quarter.equals(otherRow.getQuarter()))
+                return "Quarters do not match. [" + quarter + ", " + otherRow.getQuarter() + "]\n";
+
+            BigDecimal pipelineTotalDiff = new BigDecimal(
+                    otherRow.getRevenue().doubleValue() - revenue.doubleValue());
+            BigDecimal opptysCreatedDiff = new BigDecimal(
+                    otherRow.getOpptysCreatedTotal().doubleValue() - opptysCreatedTotal.doubleValue());
+            BigDecimal miPipelineDiff = new BigDecimal(
+                    otherRow.getMiPipelineTotal().doubleValue() - miPipelineTotal.doubleValue());
+            BigDecimal opptysInfluencedDiff = new BigDecimal(
+                    otherRow.getMarketingOpptyInfluencedTotal().doubleValue()
+                            - marketingOpptyInfluencedTotal.doubleValue());
+            String outputTemplate = "%s totals differ by > %s. Stage: %s, Prod: %s\n";
+            if(pipelineTotalDiff.doubleValue() > ACCEPTABLE_DIFFERENCE_AMOUNT)
+                comparisonResult.append(String.format(outputTemplate, "Pipeline",
+                        ACCEPTABLE_DIFFERENCE_AMOUNT, revenue, otherRow.revenue));
+
+
+            if(opptysCreatedDiff.doubleValue() > ACCEPTABLE_DIFFERENCE_AMOUNT)
+                comparisonResult.append(String.format(outputTemplate, "Opptys Created",
+                        ACCEPTABLE_DIFFERENCE_AMOUNT, opptysCreatedTotal, otherRow.getOpptysCreatedTotal()));
+
+
+            if(miPipelineDiff.doubleValue() > ACCEPTABLE_DIFFERENCE_AMOUNT)
+                comparisonResult.append(String.format(outputTemplate, "Marketing Influence Pipeline",
+                        ACCEPTABLE_DIFFERENCE_AMOUNT, miPipelineTotal, otherRow.getMiPipelineTotal()));
+
+
+            if(opptysInfluencedDiff.doubleValue() > ACCEPTABLE_DIFFERENCE_AMOUNT)
+                comparisonResult.append(String.format(outputTemplate, ACCEPTABLE_DIFFERENCE_AMOUNT,
+                        marketingOpptyInfluencedTotal, otherRow.getMarketingOpptyInfluencedTotal()));
+
+
+            return comparisonResult.toString();
+        }
+
+        public BigInteger getRevenue() {
+            return revenue;
+        }
+
+        public void setRevenue(BigInteger revenue) {
+            this.revenue = revenue;
+        }
+
+        public BigInteger getOpptysCreatedTotal() {
+            return opptysCreatedTotal;
+        }
+
+        public void setOpptysCreatedTotal(BigInteger opptysCreatedTotal) {
+            this.opptysCreatedTotal = opptysCreatedTotal;
+        }
+
+        public BigInteger getMiPipelineTotal() {
+            return miPipelineTotal;
+        }
+
+        public void setMiPipelineTotal(BigInteger miPipelineTotal) {
+            this.miPipelineTotal = miPipelineTotal;
+        }
+
+        public BigInteger getMarketingOpptyInfluencedTotal() {
+            return marketingOpptyInfluencedTotal;
+        }
+
+        public void setMarketingOpptyInfluencedTotal(BigInteger marketingOpptyInfluencedTotal) {
+            this.marketingOpptyInfluencedTotal = marketingOpptyInfluencedTotal;
+        }
+
+        public String getQuarter() {
+            return quarter;
+        }
+
+        public void setQuarter(String quarter) {
+            this.quarter = quarter;
+        }
+
+    }
 
 
 }

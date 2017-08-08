@@ -10,7 +10,7 @@ public class BasePage {
     public final String DEV_BASE_URL = "https://dev.brightfunnel.com";
     public final String STAGE_BASE_URL = "https://stage.brightfunnel.com";
     public final String PROD_BASE_URL = "https://app.brightfunnel.com";
-    public static final int TIME_OUT_IN_SECONDS = 60;
+    public static final int TIME_OUT_IN_SECONDS = 120;
 
     protected final String baseUrl;
 
