@@ -3,7 +3,6 @@ package com.brightfunnel.stage;
 import com.brightfunnel.pages.Environments;
 import com.brightfunnel.pages.HomePage;
 import com.brightfunnel.pages.MarketingAnalyticsPage;
-import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.openqa.selenium.By;
@@ -20,13 +19,13 @@ import java.util.concurrent.TimeUnit;
 /**
  * This is for stage testing the Marketing Impact Page
  */
-public class MarketingImpactPageTest extends TestCase {
+public class MarketingImpactPageTest extends BaseStageTest {
 
 
     public static final int NUM_ROWS = 5;
     public static String USER_NAME;
     public static String PASSWORD;
-    public static final int ACCEPTABLE_DIFFERENCE_AMOUNT = 200_000;
+    public static final int ACCEPTABLE_DIFFERENCE_AMOUNT = 1_000;
 
     private WebDriver driver;
     private StringBuffer verificationErrors = new StringBuffer();
@@ -46,6 +45,13 @@ public class MarketingImpactPageTest extends TestCase {
 
     }
 
+    /**
+     * Logs into stage, goes to marketing impact page, and for each combination of period, oppty types, etc, it will
+     * pull the data for the first NUM_ROWS rows and compare each to prod. It will fail if the differences between
+     * the two environments is > ACCEPTABLE_AMOUNT
+     *
+     * @throws Exception
+     */
     public void testMarketingImpact() throws Exception{
 
         int[] orgIds = {12};
@@ -57,7 +63,7 @@ public class MarketingImpactPageTest extends TestCase {
                 for(String periodType : periods){
                     for(String opptyType : opptyTypes){
                         for(String modelType : modelTypes){
-                            String result = testMarketingImpactTotals(orgId, periodType, opptyType, modelType);
+                            String result = testMarketingImpactTotalsMultiTab(orgId, periodType, opptyType, modelType);
                             if(result.length() > 0)
                                 failedOrgs.add("[Org: " + orgId + "] - result: " + result);
                         }
@@ -68,22 +74,12 @@ public class MarketingImpactPageTest extends TestCase {
                 failedOrgs.add("[Org: " + orgId + "] - error: " + e.getMessage());
             }
 
-            if(i > 1)
-                break;
+
         }
 
         assertTrue("Marketing Impact totals differ for at least one org. Results[" + listToString(failedOrgs),
                 failedOrgs.isEmpty());
 
-    }
-
-    private String listToString(List<String> results) {
-        StringBuffer sb = new StringBuffer();
-
-        for(String result : results)
-            sb.append(result);
-
-        return sb.toString();
     }
 
     private String testMarketingImpactTotals(int orgId, String periodType, String opptyType, String modelType) {
@@ -93,7 +89,7 @@ public class MarketingImpactPageTest extends TestCase {
         HomePage homePage = new HomePage(driver, Environments.STAGE);
         homePage.navigateTo();
         homePage.login(USER_NAME, PASSWORD);
-        homePage.loginAsOrg(driver, orgId);
+        homePage.loginAsOrg(orgId);
 
         MarketingAnalyticsPage marketingAnalyticsPage = new MarketingAnalyticsPage(driver, Environments.STAGE);
         marketingAnalyticsPage.navigateTo();
@@ -115,11 +111,11 @@ public class MarketingImpactPageTest extends TestCase {
         }
 
         // open up homepage on prod
-        homePage.logout(driver);
+        homePage.logout();
         homePage = new HomePage(driver, Environments.PROD);
         homePage.navigateTo();
         homePage.login(USER_NAME, PASSWORD);
-        homePage.loginAsOrg(driver, orgId);
+        homePage.loginAsOrg(orgId);
 
         // go to the marketing analytics page
         marketingAnalyticsPage = new MarketingAnalyticsPage(driver, Environments.PROD);
@@ -141,6 +137,81 @@ public class MarketingImpactPageTest extends TestCase {
         }
 
 
+        // go through each row and compare prod vs stage
+        StringBuffer comparisonResult = new StringBuffer();
+        for(int i=0; i < NUM_ROWS; i++){
+            MIDataRow stage = stageData.get(0);
+            MIDataRow prod = prodData.get(0);
+
+            String rowCompare =  stage.compareTo(prod);
+            if(rowCompare.length() > 0)
+                comparisonResult.append("\t").append(rowCompare).append("\n");
+
+        }
+
+        return comparisonResult.toString();
+    }
+
+
+    private String testMarketingImpactTotalsMultiTab(int orgId, String periodType, String opptyType, String modelType) {
+
+        System.out.println("Starting stage test for marketing analytics page totals for orgId: " + orgId +
+            ", period: " + periodType + ", opptyType: " + opptyType + ", modelType: " + modelType);
+        HomePage homePage = new HomePage(driver, Environments.STAGE);
+        homePage.navigateTo();
+        homePage.login(USER_NAME, PASSWORD);
+        homePage.loginAsOrg(orgId);
+
+        MarketingAnalyticsPage marketingAnalyticsPage = new MarketingAnalyticsPage(driver, Environments.STAGE);
+        marketingAnalyticsPage.navigateTo();
+
+        // change attribution model to single-touch first touch
+        marketingAnalyticsPage.changeAttributionModel(periodType, opptyType, modelType);
+
+        // pull marketing impact data for a few of the first rows
+        List<MIDataRow> stageData = new LinkedList<>();
+        for(int row =1; row < NUM_ROWS; row++){
+            String xpath = String.format("id('totalRevenueTable')//tr[%s]/td[%s]", row, 2);
+            String quarter = driver.findElement(By.xpath(xpath)).getText();
+            BigInteger stagePipeLineTotal = marketingAnalyticsPage.getRowData(row, 3 );
+            BigInteger stageOpptysCreatedTotal = marketingAnalyticsPage.getRowData(row, 4 );
+            BigInteger stageMIPipelineTotal = marketingAnalyticsPage.getRowData(row, 5 );
+            BigInteger stageMOpptyInfluencedTotal = marketingAnalyticsPage.getRowData(row, 6 );
+            stageData.add(new MIDataRow(quarter,stagePipeLineTotal, stageOpptysCreatedTotal,
+                    stageMIPipelineTotal, stageMOpptyInfluencedTotal));
+        }
+
+        // open up homepage on prod
+        homePage.logout();
+        homePage.openNewTab();
+        homePage.switchToNewTab();
+        homePage = new HomePage(driver, Environments.PROD);
+        homePage.navigateTo();
+        homePage.login(USER_NAME, PASSWORD);
+        homePage.loginAsOrg(orgId);
+
+        // go to the marketing analytics page
+        marketingAnalyticsPage = new MarketingAnalyticsPage(driver, Environments.PROD);
+        marketingAnalyticsPage.navigateTo();
+
+        // change attribution model to single-touch first touch
+        marketingAnalyticsPage.changeAttributionModel(periodType, opptyType, modelType);
+
+        List<MIDataRow> prodData = new LinkedList<>();
+        for(int row = 1; row < NUM_ROWS; row++){
+            String xpath = String.format("id('totalRevenueTable')//tr[%s]/td[%s]", row, 2);
+            String quarter = driver.findElement(By.xpath(xpath)).getText();
+            BigInteger stagePipeLineTotal = marketingAnalyticsPage.getRowData(row, 3 );
+            BigInteger stageOpptysCreatedTotal = marketingAnalyticsPage.getRowData(row, 4 );
+            BigInteger stageMIPipelineTotal = marketingAnalyticsPage.getRowData(row, 5 );
+            BigInteger stageMOpptyInfluencedTotal = marketingAnalyticsPage.getRowData(row, 6 );
+            prodData.add(new MIDataRow(quarter,stagePipeLineTotal, stageOpptysCreatedTotal,
+                    stageMIPipelineTotal, stageMOpptyInfluencedTotal));
+        }
+
+        homePage.logout();
+        homePage.closeNewTab();
+        
         // go through each row and compare prod vs stage
         StringBuffer comparisonResult = new StringBuffer();
         for(int i=0; i < NUM_ROWS; i++){

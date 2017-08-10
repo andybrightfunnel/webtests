@@ -42,7 +42,7 @@ public class HomePage extends BasePage{
                 driver.getCurrentUrl().contains("/#/dashboard"));
     }
 
-    public void loginAsOrg(WebDriver driver, int orgId){
+    public void loginAsOrg(int orgId){
 
         String baseUrl = super.getCurrentUrlBase();
         String url = baseUrl + "/LoginAs?username=org" + orgId;
@@ -54,7 +54,7 @@ public class HomePage extends BasePage{
                 driver.getCurrentUrl().contains("/#/dashboard"));
     }
 
-    public void logout(WebDriver driver){
+    public void logout(){
         driver.get(this.getCurrentUrlBase() + "logout");
     }
 }

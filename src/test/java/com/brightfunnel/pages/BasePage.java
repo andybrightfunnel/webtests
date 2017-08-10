@@ -1,12 +1,19 @@
 package com.brightfunnel.pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
+
 public class BasePage {
 
-    WebDriver driver;
+    protected WebDriver driver;
     public final String DEV_BASE_URL = "https://dev.brightfunnel.com";
     public final String STAGE_BASE_URL = "https://stage.brightfunnel.com";
     public final String PROD_BASE_URL = "https://app.brightfunnel.com";
@@ -42,6 +49,19 @@ public class BasePage {
     }
 
     public void openNewTab(){
-        driver.findElement(By.tagName("body")).sendKeys(Keys.chord(Keys.CONTROL,"t"));
+        //driver.findElement(By.tagName("body")).sendKeys(Keys.chord(Keys.CONTROL,"t"));
+        ((JavascriptExecutor) driver).executeScript("window.open('', '_blank')");
+    }
+
+    public void switchToNewTab(){
+        ArrayList<String> tabs = new ArrayList<String>(driver.getWindowHandles());
+        driver.switchTo().window(tabs.get(1));
+    }
+
+    public void closeNewTab(){
+        ArrayList<String> tabs = new ArrayList<String> (driver.getWindowHandles());
+        driver.switchTo().window(tabs.get(1));
+        driver.close();
+        driver.switchTo().window(tabs.get(0));
     }
 }
