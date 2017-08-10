@@ -1,5 +1,7 @@
-package com.brightfunnel.pages;
+package com.brightfunnel.pages.revenue_pipeline;
 
+import com.brightfunnel.pages.BasePage;
+import com.brightfunnel.pages.Environments;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
@@ -15,15 +17,6 @@ import java.util.Map;
 
 public class AttributionByQuarterPage extends BasePage {
 
-    public static final String COL_1 = "col1";
-    public static final String COL_2 = "col2";
-    public static final String COL_3 = "col3";
-    public static final String COL_4 = "col4";
-    public static final String COL_5 = "col5";
-    public static final String COL_6 = "col6";
-    public static final String COL_7 = "col7";
-
-    public static final String[] DATA_COLS = {COL_1, COL_2, COL_3, COL_4, COL_5, COL_6, COL_7};
 
     String basePath = "#/discover/revenue-and-pipeline/attribution-by-quarter?startDate=1501611452734&endDate=1502216252734&cohort=quarter2Date&grp=only&dataSet=opptyCloseDate&revenueType=booked";
 
@@ -47,9 +40,7 @@ public class AttributionByQuarterPage extends BasePage {
 
     public void changeAttributionModel(String revenueType, String cohort){
 
-        // cohort=Q117&grp=only&revenueType=booked&dataSet=opptyCloseDate&startDate=1501698266389&endDate=1502303066389
         String dataSet = ("booked".equals(revenueType)) ? "opptyCloseDate" : "opptyCreatedDate";
-        //#/discover/revenue-and-pipeline/attribution-by-quarter?cohort=Q216&grp=only&revenueType=pipeline&dataSet=opptyCreatedDate&startDate=1501698266389&endDate=1502303066389
 
         StringBuilder urlBuilder = new StringBuilder();
         urlBuilder.append(this.getCurrentUrlBase());

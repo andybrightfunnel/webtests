@@ -1,8 +1,9 @@
-package com.brightfunnel.stage;
+package com.brightfunnel.stage.revenue_pipeline;
 
 import com.brightfunnel.pages.Environments;
 import com.brightfunnel.pages.HomePage;
-import com.brightfunnel.pages.MarketingAnalyticsPage;
+import com.brightfunnel.pages.revenue_pipeline.MarketingAnalyticsPage;
+import com.brightfunnel.stage.BaseStageTest;
 import org.junit.After;
 import org.junit.Before;
 import org.openqa.selenium.By;
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * This is for stage testing the Marketing Impact Page
  */
-public class MarketingImpactPageTest extends BaseStageTest {
+public class MarketingImpactPageStageTests extends BaseStageTest {
 
 
     public static final int NUM_ROWS = 5;
@@ -28,7 +29,6 @@ public class MarketingImpactPageTest extends BaseStageTest {
     public static final int ACCEPTABLE_DIFFERENCE_AMOUNT = 1_000;
 
     private WebDriver driver;
-    private StringBuffer verificationErrors = new StringBuffer();
     String[] periods = { "quarter", "monthly"};
     String[] opptyTypes = { "deal", "oppty"};
     String[] modelTypes = { "sourced", "last", "even", "custom"};
@@ -231,10 +231,6 @@ public class MarketingImpactPageTest extends BaseStageTest {
     @After
     public void tearDown() throws Exception {
         driver.quit();
-        String verificationErrorString = verificationErrors.toString();
-        if (!"".equals(verificationErrorString)) {
-            fail(verificationErrorString);
-        }
     }
 
 

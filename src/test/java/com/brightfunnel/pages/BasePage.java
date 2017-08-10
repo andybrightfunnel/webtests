@@ -19,6 +19,20 @@ public class BasePage {
     public final String PROD_BASE_URL = "https://app.brightfunnel.com";
     public static final int TIME_OUT_IN_SECONDS = 120;
 
+    // Data column map keys
+    public static final String COL_1 = "col1";
+    public static final String COL_2 = "col2";
+    public static final String COL_3 = "col3";
+    public static final String COL_4 = "col4";
+    public static final String COL_5 = "col5";
+    public static final String COL_6 = "col6";
+    public static final String COL_7 = "col7";
+    public static final String COL_8 = "col8";
+    public static final String COL_9 = "col9";
+    public static final String COL_10 = "col10";
+    public static final String COL_11 = "col11";
+    public static final String COL_12 = "col12";
+
     protected final String baseUrl;
 
     public BasePage(WebDriver newDriver){

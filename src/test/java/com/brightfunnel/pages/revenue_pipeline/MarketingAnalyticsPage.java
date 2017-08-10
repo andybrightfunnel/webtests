@@ -1,5 +1,7 @@
-package com.brightfunnel.pages;
+package com.brightfunnel.pages.revenue_pipeline;
 
+import com.brightfunnel.pages.BasePage;
+import com.brightfunnel.pages.Environments;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
