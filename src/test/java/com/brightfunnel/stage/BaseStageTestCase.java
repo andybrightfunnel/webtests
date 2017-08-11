@@ -2,6 +2,7 @@ package com.brightfunnel.stage;
 
 import junit.framework.TestCase;
 import org.junit.After;
+import org.junit.Before;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
@@ -27,8 +28,32 @@ public class BaseStageTestCase extends TestCase {
         HTML_UNIT_FOR_IE
     }
 
+    public static String USER_NAME;
+    public static String PASSWORD;
+    public static final int NUM_DATA_ROWS_TO_INSPECT = 5;
+    public int[] orgIds;
+
     public static final int ACCEPTABLE_DIFFERENCE_AMOUNT = 1_000;
 
+    @Before
+    public void setUp() throws Exception {
+        initDriver();
+        USER_NAME = System.getenv("BF_USERNAME");
+        PASSWORD = System.getenv("BF_PASSWORD");
+
+
+        assertNotNull(USER_NAME, "Unable to retrieve username from system environment variable: BF_USERNAME");
+        assertNotNull(PASSWORD, "Unable to retrieve password from system environment variable: BF_PASSWORD");
+
+        String orgIdProp = System.getenv("BF_ORGIDS");
+
+        assertNotNull("Unable to retreive target orgIDS from system environement variable: BF_ORGIDS");
+        String [] ids = orgIdProp.split(",");
+        orgIds = new int[ids.length];
+        for(int i=0; i < ids.length; i++){
+            orgIds[i] = Integer.parseInt(ids[i]);
+        }
+    }
 
     protected String listToString(List<String> results) {
         StringBuffer sb = new StringBuffer();

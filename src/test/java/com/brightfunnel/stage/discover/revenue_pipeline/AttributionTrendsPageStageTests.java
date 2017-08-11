@@ -13,23 +13,11 @@ import java.util.Map;
 
 public class AttributionTrendsPageStageTests extends BaseStageTestCase {
 
-    public static String USER_NAME;
-    public static String PASSWORD;
-    public static final int NUM_DATA_ROWS_TO_INSPECT = 5;
 
     String[] revenueTypes = { "revenue", "pipeline"};
     String[] attributionModels = { "sourced", "custom"};
 
 
-    @Before
-    public void setUp() throws Exception {
-        initDriver();
-        USER_NAME = System.getenv("BF_USERNAME");
-        PASSWORD = System.getenv("BF_PASSWORD");
-        assertNotNull(USER_NAME, "Unable to retrieve username from system environment variable: BF_USERNAME");
-        assertNotNull(PASSWORD, "Unable to retrieve password from system environment variable: BF_PASSWORD");
-
-    }
 
     /**
      * Logs into stage, goes to attribution trends page, and for each combination of period, oppty types, etc, it will
@@ -40,7 +28,6 @@ public class AttributionTrendsPageStageTests extends BaseStageTestCase {
      */
     public void testAttributionTrendsPage() throws Exception{
 
-        int[] orgIds = {12};
         List<String> failedOrgs = new ArrayList<>();
 
         for(int i=0; i < orgIds.length; i++){

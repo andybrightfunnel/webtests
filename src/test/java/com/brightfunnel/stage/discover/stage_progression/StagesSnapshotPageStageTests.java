@@ -19,23 +19,11 @@ import java.util.Map;
  */
 public class StagesSnapshotPageStageTests extends BaseStageTestCase {
 
-    public static String USER_NAME;
-    public static String PASSWORD;
     public static final int ACCEPTABLE_DIFFERENCE_AMOUNT = 10;
 
     String[] cohorts = { "Q217", "Q117", "Q416", "Q316"};
 
 
-    @Before
-    public void setUp() throws Exception {
-
-        initDriver();
-        USER_NAME = System.getenv("BF_USERNAME");
-        PASSWORD = System.getenv("BF_PASSWORD");
-        assertNotNull(USER_NAME, "Unable to retrieve username from system environment variable: BF_USERNAME");
-        assertNotNull(PASSWORD, "Unable to retrieve password from system environment variable: BF_PASSWORD");
-
-    }
 
 
     /**
@@ -47,7 +35,6 @@ public class StagesSnapshotPageStageTests extends BaseStageTestCase {
      */
     public void testStagesSnapshotPage() throws Exception{
 
-        int[] orgIds = {12};
         List<String> failedOrgs = new ArrayList<>();
 
         for(int i=0; i < orgIds.length; i++){

@@ -18,22 +18,10 @@ import static com.brightfunnel.pages.BasePage.*;
  */
 public class AttributionByQuarterPageStageTests extends BaseStageTestCase {
 
-    public static String USER_NAME;
-    public static String PASSWORD;
 
     String[] revenueTypes = { "booked", "pipeline"};
     String[] cohorts = { "Q316", "Q416", "Q117"};
 
-    @Before
-    public void setUp() throws Exception {
-
-        initDriver();
-        USER_NAME = System.getenv("BF_USERNAME");
-        PASSWORD = System.getenv("BF_PASSWORD");
-        assertNotNull(USER_NAME, "Unable to retrieve username from system environment variable: BF_USERNAME");
-        assertNotNull(PASSWORD, "Unable to retrieve password from system environment variable: BF_PASSWORD");
-
-    }
 
     /**
      * Logs into stage, goes to attribution by quarter page, and for each combination of period, oppty types, etc, it will
@@ -44,7 +32,6 @@ public class AttributionByQuarterPageStageTests extends BaseStageTestCase {
      */
     public void testAttributionByQuarterPage() throws Exception{
 
-        int[] orgIds = {12};
         List<String> failedOrgs = new ArrayList<>();
 
         for(int i=0; i < orgIds.length; i++){

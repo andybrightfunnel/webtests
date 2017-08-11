@@ -20,8 +20,6 @@ public class MarketingImpactPageStageTests extends BaseStageTestCase {
 
 
     public static final int NUM_ROWS = 5;
-    public static String USER_NAME;
-    public static String PASSWORD;
     public static final int ACCEPTABLE_DIFFERENCE_AMOUNT = 1_000;
 
     String[] periods = { "quarter", "monthly"};
@@ -29,15 +27,6 @@ public class MarketingImpactPageStageTests extends BaseStageTestCase {
     String[] modelTypes = { "sourced", "last", "even", "custom"};
 
 
-    @Before
-    public void setUp() throws Exception {
-        initDriver();
-        USER_NAME = System.getenv("BF_USERNAME");
-        PASSWORD = System.getenv("BF_PASSWORD");
-        assertNotNull(USER_NAME, "Unable to retrieve username from system environment variable: BF_USERNAME");
-        assertNotNull(PASSWORD, "Unable to retrieve password from system environment variable: BF_PASSWORD");
-
-    }
 
     /**
      * Logs into stage, goes to marketing impact page, and for each combination of period, oppty types, etc, it will
@@ -48,7 +37,6 @@ public class MarketingImpactPageStageTests extends BaseStageTestCase {
      */
     public void testMarketingImpact() throws Exception{
 
-        int[] orgIds = {12};
         List<String> failedOrgs = new ArrayList<>();
 
         for(int i=0; i < orgIds.length; i++){
