@@ -1,26 +1,22 @@
-package com.brightfunnel.stage.revenue_pipeline;
+package com.brightfunnel.stage.discover.revenue_pipeline;
 
 import com.brightfunnel.pages.Environments;
 import com.brightfunnel.pages.HomePage;
-import com.brightfunnel.pages.revenue_pipeline.MarketingAnalyticsPage;
-import com.brightfunnel.stage.BaseStageTest;
-import org.junit.After;
+import com.brightfunnel.pages.discover.revenue_pipeline.MarketingImpactPage;
+import com.brightfunnel.stage.BaseStageTestCase;
 import org.junit.Before;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * This is for stage testing the Marketing Impact Page
  */
-public class MarketingImpactPageStageTests extends BaseStageTest {
+public class MarketingImpactPageStageTests extends BaseStageTestCase {
 
 
     public static final int NUM_ROWS = 5;
@@ -28,16 +24,14 @@ public class MarketingImpactPageStageTests extends BaseStageTest {
     public static String PASSWORD;
     public static final int ACCEPTABLE_DIFFERENCE_AMOUNT = 1_000;
 
-    private WebDriver driver;
     String[] periods = { "quarter", "monthly"};
     String[] opptyTypes = { "deal", "oppty"};
     String[] modelTypes = { "sourced", "last", "even", "custom"};
 
+
     @Before
     public void setUp() throws Exception {
-        driver = new ChromeDriver();
-        driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-
+        initDriver();
         USER_NAME = System.getenv("BF_USERNAME");
         PASSWORD = System.getenv("BF_PASSWORD");
         assertNotNull(USER_NAME, "Unable to retrieve username from system environment variable: BF_USERNAME");
@@ -77,21 +71,22 @@ public class MarketingImpactPageStageTests extends BaseStageTest {
 
         }
 
-        assertTrue("Marketing Impact totals differ for at least one org. Results[" + listToString(failedOrgs),
+        assertTrue(MarketingImpactPage.PAGE_NAME + " totals differ for at least one org. Results[" + listToString(failedOrgs),
                 failedOrgs.isEmpty());
 
     }
 
     private String testMarketingImpactTotals(int orgId, String periodType, String opptyType, String modelType) {
 
-        System.out.println("Starting stage test for marketing analytics page totals for orgId: " + orgId +
+        System.out.println("Starting stage test for " + MarketingImpactPage.PAGE_NAME +" totals for orgId: " + orgId +
+
             ", period: " + periodType + ", opptyType: " + opptyType + ", modelType: " + modelType);
         HomePage homePage = new HomePage(driver, Environments.STAGE);
         homePage.navigateTo();
         homePage.login(USER_NAME, PASSWORD);
         homePage.loginAsOrg(orgId);
 
-        MarketingAnalyticsPage marketingAnalyticsPage = new MarketingAnalyticsPage(driver, Environments.STAGE);
+        MarketingImpactPage marketingAnalyticsPage = new MarketingImpactPage(driver, Environments.STAGE);
         marketingAnalyticsPage.navigateTo();
 
         // change attribution model to single-touch first touch
@@ -118,7 +113,7 @@ public class MarketingImpactPageStageTests extends BaseStageTest {
         homePage.loginAsOrg(orgId);
 
         // go to the marketing analytics page
-        marketingAnalyticsPage = new MarketingAnalyticsPage(driver, Environments.PROD);
+        marketingAnalyticsPage = new MarketingImpactPage(driver, Environments.PROD);
         marketingAnalyticsPage.navigateTo();
 
         // change attribution model to single-touch first touch
@@ -155,14 +150,14 @@ public class MarketingImpactPageStageTests extends BaseStageTest {
 
     private String testMarketingImpactTotalsMultiTab(int orgId, String periodType, String opptyType, String modelType) {
 
-        System.out.println("Starting stage test for marketing analytics page totals for orgId: " + orgId +
+        System.out.println("Starting stage test for " + MarketingImpactPage.PAGE_NAME +" totals for orgId: " + orgId +
             ", period: " + periodType + ", opptyType: " + opptyType + ", modelType: " + modelType);
         HomePage homePage = new HomePage(driver, Environments.STAGE);
         homePage.navigateTo();
         homePage.login(USER_NAME, PASSWORD);
         homePage.loginAsOrg(orgId);
 
-        MarketingAnalyticsPage marketingAnalyticsPage = new MarketingAnalyticsPage(driver, Environments.STAGE);
+        MarketingImpactPage marketingAnalyticsPage = new MarketingImpactPage(driver, Environments.STAGE);
         marketingAnalyticsPage.navigateTo();
 
         // change attribution model to single-touch first touch
@@ -191,7 +186,7 @@ public class MarketingImpactPageStageTests extends BaseStageTest {
         homePage.loginAsOrg(orgId);
 
         // go to the marketing analytics page
-        marketingAnalyticsPage = new MarketingAnalyticsPage(driver, Environments.PROD);
+        marketingAnalyticsPage = new MarketingImpactPage(driver, Environments.PROD);
         marketingAnalyticsPage.navigateTo();
 
         // change attribution model to single-touch first touch
@@ -225,12 +220,6 @@ public class MarketingImpactPageStageTests extends BaseStageTest {
         }
 
         return comparisonResult.toString();
-    }
-
-
-    @After
-    public void tearDown() throws Exception {
-        driver.quit();
     }
 
 
@@ -330,6 +319,5 @@ public class MarketingImpactPageStageTests extends BaseStageTest {
         }
 
     }
-
 
 }

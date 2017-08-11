@@ -27,8 +27,18 @@ public class HomePage extends BasePage{
     public void login(String userName, String password){
 
         driver.get(baseUrl + "/login/auth");
-        WebElement element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
-                until(ExpectedConditions.visibilityOfElementLocated(By.id("password")));
+
+        WebElement element = null;
+
+        try {
+            element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
+                    until(ExpectedConditions.visibilityOfElementLocated(By.id("password")));
+
+        }catch(Exception e){
+            logout();
+            element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
+                    until(ExpectedConditions.visibilityOfElementLocated(By.id("password")));
+        }
 
         driver.findElement(By.id("password")).clear();
         driver.findElement(By.id("password")).sendKeys(password);

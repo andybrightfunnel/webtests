@@ -1,4 +1,4 @@
-package com.brightfunnel.pages.revenue_pipeline;
+package com.brightfunnel.pages.discover.revenue_pipeline;
 
 import com.brightfunnel.pages.BasePage;
 import com.brightfunnel.pages.Environments;
@@ -11,14 +11,15 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.math.BigInteger;
 
-public class MarketingAnalyticsPage extends BasePage {
+public class MarketingImpactPage extends BasePage {
 
     String basePath = "#/discover/revenue-and-pipeline/marketing-impact";
+    public final static String PAGE_NAME = "Marketing Analytics Page";
 
-    public MarketingAnalyticsPage(WebDriver driver){
+    public MarketingImpactPage(WebDriver driver){
         super(driver);
     }
-    public MarketingAnalyticsPage(WebDriver driver, Environments environment){
+    public MarketingImpactPage(WebDriver driver, Environments environment){
         super(driver, environment);
     }
 

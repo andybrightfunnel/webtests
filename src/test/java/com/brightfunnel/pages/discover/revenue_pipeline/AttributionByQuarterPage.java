@@ -1,4 +1,4 @@
-package com.brightfunnel.pages.revenue_pipeline;
+package com.brightfunnel.pages.discover.revenue_pipeline;
 
 import com.brightfunnel.pages.BasePage;
 import com.brightfunnel.pages.Environments;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class AttributionByQuarterPage extends BasePage {
 
-
+    public static final String PAGE_NAME = "Attribution By Quarter Page";
     String basePath = "#/discover/revenue-and-pipeline/attribution-by-quarter?startDate=1501611452734&endDate=1502216252734&cohort=quarter2Date&grp=only&dataSet=opptyCloseDate&revenueType=booked";
 
     public AttributionByQuarterPage(WebDriver newDriver) {

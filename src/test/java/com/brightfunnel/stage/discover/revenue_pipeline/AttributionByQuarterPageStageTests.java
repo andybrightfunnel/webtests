@@ -1,14 +1,11 @@
-package com.brightfunnel.stage.revenue_pipeline;
+package com.brightfunnel.stage.discover.revenue_pipeline;
 
 import com.brightfunnel.pages.Environments;
 import com.brightfunnel.pages.HomePage;
-import com.brightfunnel.pages.revenue_pipeline.AttributionByQuarterPage;
-import com.brightfunnel.stage.BaseStageTest;
-import org.junit.After;
+import com.brightfunnel.pages.discover.revenue_pipeline.AttributionByQuarterPage;
+import com.brightfunnel.stage.BaseStageTestCase;
 import org.junit.Before;
-import org.openqa.selenium.WebDriver;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,22 +16,18 @@ import static com.brightfunnel.pages.BasePage.*;
 /**
  * Stage tests for the Attribution By Quarter Page.
  */
-public class AttributionByQuarterPageStageTests extends BaseStageTest {
+public class AttributionByQuarterPageStageTests extends BaseStageTestCase {
 
     public static String USER_NAME;
     public static String PASSWORD;
-    public static final int ACCEPTABLE_DIFFERENCE_AMOUNT = 1_000;
 
-    private WebDriver driver;
     String[] revenueTypes = { "booked", "pipeline"};
     String[] cohorts = { "Q316", "Q416", "Q117"};
 
-
     @Before
     public void setUp() throws Exception {
-        driver = createDriver(WEBDRIVER_TYPE.HTML_UNIT_FOR_CHROME);
-        //driver = createDriver(WEBDRIVER_TYPE.CHROME_DRIVER);
 
+        initDriver();
         USER_NAME = System.getenv("BF_USERNAME");
         PASSWORD = System.getenv("BF_PASSWORD");
         assertNotNull(USER_NAME, "Unable to retrieve username from system environment variable: BF_USERNAME");
@@ -74,8 +67,10 @@ public class AttributionByQuarterPageStageTests extends BaseStageTest {
         }
 
         if(!failedOrgs.isEmpty()){
-            System.out.println("Attribution By Quarter totals differ for at least one org. Results[" + listToString(failedOrgs));
-            fail("Attribution By Quarter totals differ for at least one org");
+            String output =  AttributionByQuarterPage.PAGE_NAME +
+                    "totals differ for at least one org. Results[" + listToString(failedOrgs);
+            System.out.println(output);
+            fail(output);
         }
 
     }
@@ -98,9 +93,6 @@ public class AttributionByQuarterPageStageTests extends BaseStageTest {
         attributionByQuarterPage.changeAttributionModel(revenueType, cohort);
 
         Map columnHeaderMap = attributionByQuarterPage.getDataColumnHeaderMap();
-
-        // sort by campaign group asc
-//        attributionByQuarterPage.sortByHeader(3);
 
         // pull data for first few rows
         List<Map<String,Object>> stageData = new LinkedList<>();
@@ -157,41 +149,11 @@ public class AttributionByQuarterPageStageTests extends BaseStageTest {
 
     }
 
-    private String compareDataRows(Map columnHeaderMap, Map stageRowData, Map prodRowData) {
-
-
-        String columns [] = {COL_1, COL_2, COL_3, COL_4, COL_5, COL_6, COL_7};
-
-        StringBuffer results = new StringBuffer();
-
-        String messageTemplate = "\tFAILED[ %s does not match. Stage: %s, Prod: %s.]\n";
-        for(String col : columns){
-            String header = (String)columnHeaderMap.get(col);
-
-            if(COL_1.equals(col)){
-                String stageVal = (String)stageRowData.get(col);
-                String prodVal = (String) prodRowData.get(col);
-                if(!stageVal.equals(prodVal)){
-                    results.append("Stage campaign Ids don't match. Stage: "  + stageVal +
-                        ", prod: " + prodVal );
-                }
-            }else{
-                BigDecimal stageVal = (BigDecimal) stageRowData.get(col);
-                BigDecimal prodVal = (BigDecimal) prodRowData.get(col);
-
-                BigDecimal diff = prodVal.subtract(stageVal).abs();
-                if(diff.doubleValue() > ACCEPTABLE_DIFFERENCE_AMOUNT){
-                    results.append(String.format(messageTemplate, header, stageVal, prodVal));
-                }
-            }
-
-        }
-        return results.toString();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        driver.quit();
+    /*
+        Override base class to allow for more columns in the data map
+     */
+    public String[] getDataColumnMapKeys() {
+        return new String[] {COL_1, COL_2, COL_3, COL_4, COL_5, COL_6, COL_7};
     }
 
 }

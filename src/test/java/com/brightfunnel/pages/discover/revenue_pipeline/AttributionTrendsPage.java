@@ -1,4 +1,4 @@
-package com.brightfunnel.pages.revenue_pipeline;
+package com.brightfunnel.pages.discover.revenue_pipeline;
 
 import com.brightfunnel.pages.BasePage;
 import com.brightfunnel.pages.Environments;
@@ -15,6 +15,10 @@ import java.util.Map;
 public class AttributionTrendsPage extends BasePage {
 
     String basePath = "#/discover/revenue-and-pipeline/attribution-trends?metric=value&type=revenue&model=sourced";
+
+    public static final String PAGE_NAME = "Attribution Trends Page";
+    public static final String DATA_COLUMNS_KEYS[] =
+            {COL_1, COL_2, COL_3, COL_4, COL_5, COL_6, COL_7, COL_8, COL_9, COL_10, COL_11, COL_12};
 
     public AttributionTrendsPage(WebDriver newDriver) {
         super(newDriver);

@@ -1,38 +1,29 @@
-package com.brightfunnel.stage.revenue_pipeline;
+package com.brightfunnel.stage.discover.revenue_pipeline;
 
 import com.brightfunnel.pages.Environments;
 import com.brightfunnel.pages.HomePage;
-import com.brightfunnel.pages.revenue_pipeline.AttributionTrendsPage;
-import com.brightfunnel.stage.BaseStageTest;
-import org.junit.After;
+import com.brightfunnel.pages.discover.revenue_pipeline.AttributionTrendsPage;
+import com.brightfunnel.stage.BaseStageTestCase;
 import org.junit.Before;
-import org.openqa.selenium.WebDriver;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static com.brightfunnel.pages.BasePage.*;
-import static com.brightfunnel.pages.BasePage.COL_1;
-
-public class AttributionTrendsPageStageTests extends BaseStageTest {
+public class AttributionTrendsPageStageTests extends BaseStageTestCase {
 
     public static String USER_NAME;
     public static String PASSWORD;
-    public static final int ACCEPTABLE_DIFFERENCE_AMOUNT = 1_000;
     public static final int NUM_DATA_ROWS_TO_INSPECT = 5;
 
-    private WebDriver driver;
     String[] revenueTypes = { "revenue", "pipeline"};
     String[] attributionModels = { "sourced", "custom"};
 
 
     @Before
     public void setUp() throws Exception {
-        driver = createDriver(WEBDRIVER_TYPE.CHROME_DRIVER);
-
+        initDriver();
         USER_NAME = System.getenv("BF_USERNAME");
         PASSWORD = System.getenv("BF_PASSWORD");
         assertNotNull(USER_NAME, "Unable to retrieve username from system environment variable: BF_USERNAME");
@@ -72,14 +63,16 @@ public class AttributionTrendsPageStageTests extends BaseStageTest {
         }
 
         if(!failedOrgs.isEmpty()){
-            System.out.println("Attribution By Quarter totals differ for at least one org. Results[" + listToString(failedOrgs));
-            fail("Attribution By Quarter totals differ for at least one org");
+            String output = AttributionTrendsPage.PAGE_NAME +
+                    " totals differ for at least one org. Results[" + listToString(failedOrgs);
+            System.out.println(output);
+            fail(output);
         }
 
     }
 
     private String testAttributioneTrendingPage(int orgId, String revenueType, String attributionModel) {
-        System.out.println("Starting stage test for attribution trendingpage totals for orgId: " + orgId +
+        System.out.println("Starting stage " + AttributionTrendsPage.PAGE_NAME + "test for orgId: " + orgId +
                 ", revenueType: " + revenueType + ", attributionModel: " + attributionModel);
 
         // log into stage
@@ -142,41 +135,13 @@ public class AttributionTrendsPageStageTests extends BaseStageTest {
 
     }
 
-    private String compareDataRows(Map columnHeaderMap, Map stageRowData, Map prodRowData) {
 
-
-        String columns [] = {COL_1, COL_2, COL_3, COL_4, COL_5, COL_6, COL_7, COL_8, COL_9, COL_10, COL_11, COL_12};
-
-        StringBuffer results = new StringBuffer();
-
-        String messageTemplate = "\tFAILED[ %s does not match. Stage: %s, Prod: %s.]\n";
-        for(String col : columns){
-            String header = (String)columnHeaderMap.get(col);
-
-            if(COL_1.equals(col)){
-                String stageVal = (String)stageRowData.get(col);
-                String prodVal = (String) prodRowData.get(col);
-                if(!stageVal.equals(prodVal)){
-                    results.append("Stage campaign Ids don't match. Stage: "  + stageVal +
-                            ", prod: " + prodVal );
-                }
-            }else{
-                BigDecimal stageVal = (BigDecimal) stageRowData.get(col);
-                BigDecimal prodVal = (BigDecimal) prodRowData.get(col);
-
-                BigDecimal diff = prodVal.subtract(stageVal).abs();
-                if(diff.doubleValue() > ACCEPTABLE_DIFFERENCE_AMOUNT){
-                    results.append(String.format(messageTemplate, header, stageVal, prodVal));
-                }
-            }
-
-        }
-        return results.toString();
+    /**
+     * Overrides base class method to allow for more columns stored in data map
+     *
+     * @return a list of dataMap keys for each column in the data list section on the page
+     */
+    public String[] getDataColumnMapKeys() {
+        return AttributionTrendsPage.DATA_COLUMNS_KEYS;
     }
-
-    @After
-    public void tearDown() throws Exception {
-        driver.quit();
-    }
-
 }
