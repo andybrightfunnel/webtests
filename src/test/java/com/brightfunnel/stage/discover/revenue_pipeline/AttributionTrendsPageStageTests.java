@@ -4,7 +4,6 @@ import com.brightfunnel.pages.Environments;
 import com.brightfunnel.pages.HomePage;
 import com.brightfunnel.pages.discover.revenue_pipeline.AttributionTrendsPage;
 import com.brightfunnel.stage.BaseStageTestCase;
-import org.junit.Before;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -66,7 +65,7 @@ public class AttributionTrendsPageStageTests extends BaseStageTestCase {
         // log into stage
         HomePage homePage = new HomePage(driver, Environments.STAGE);
         homePage.navigateTo();
-        homePage.login(USER_NAME, PASSWORD);
+        homePage.login(bfUsername, bfPassword);
         homePage.loginAsOrg(orgId);
 
         // go to the attribution trending page
@@ -92,7 +91,7 @@ public class AttributionTrendsPageStageTests extends BaseStageTestCase {
         homePage.switchToNewTab();
         homePage = new HomePage(driver, Environments.PROD);
         homePage.navigateTo();
-        homePage.login(USER_NAME, PASSWORD);
+        homePage.login(bfUsername, bfPassword);
         homePage.loginAsOrg(orgId);
 
         // go to same attribution trending page with same attribution model

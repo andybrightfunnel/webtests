@@ -1,10 +1,20 @@
 package com.brightfunnel.stage;
 
+import com.brightfunnel.ContextConfig;
 import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.runner.RunWith;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.safari.SafariDriver;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -16,43 +26,30 @@ import static com.brightfunnel.pages.BasePage.*;
 /**
  * Base test case which will have some shared functionality with each stage test
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = { ContextConfig.class })
 public class BaseStageTestCase extends TestCase {
 
 
     public WebDriver driver;
 
-    public enum WEBDRIVER_TYPE{
-        CHROME_DRIVER,
-        HTML_UNIT_FOR_CHROME,
-        HTML_UNIT_FOR_FIREFOX,
-        HTML_UNIT_FOR_IE
-    }
+    @Value("${bf.username}")
+    public String bfUsername;
 
-    public static String USER_NAME;
-    public static String PASSWORD;
-    public static final int NUM_DATA_ROWS_TO_INSPECT = 5;
+    @Value("${bf.password}")
+    public String bfPassword;
+
+    @Value("${target.orgIds}")
     public int[] orgIds;
+
+    @Value("${webdriver.type}")
+    private String webDriverType;
 
     public static final int ACCEPTABLE_DIFFERENCE_AMOUNT = 1_000;
 
     @Before
     public void setUp() throws Exception {
         initDriver();
-        USER_NAME = System.getenv("BF_USERNAME");
-        PASSWORD = System.getenv("BF_PASSWORD");
-
-
-        assertNotNull(USER_NAME, "Unable to retrieve username from system environment variable: BF_USERNAME");
-        assertNotNull(PASSWORD, "Unable to retrieve password from system environment variable: BF_PASSWORD");
-
-        String orgIdProp = System.getenv("BF_ORGIDS");
-
-        assertNotNull("Unable to retreive target orgIDS from system environement variable: BF_ORGIDS");
-        String [] ids = orgIdProp.split(",");
-        orgIds = new int[ids.length];
-        for(int i=0; i < ids.length; i++){
-            orgIds[i] = Integer.parseInt(ids[i]);
-        }
     }
 
     protected String listToString(List<String> results) {
@@ -102,11 +99,35 @@ public class BaseStageTestCase extends TestCase {
 
     @After
     public void tearDown() throws Exception {
-        driver.quit();
+
+        if(driver != null)
+            driver.quit();
     }
 
     public void initDriver(){
-        driver = new ChromeDriver();
+
+        switch (webDriverType){
+            case "ChromeDriver":
+                driver = new ChromeDriver();
+                break;
+            case "HtmlUnitDriver":
+                driver = new HtmlUnitDriver();
+                break;
+            case "FireFoxDriver":
+                driver = new FirefoxDriver();
+            case "SafariDriver":
+                driver = new SafariDriver();
+                break;
+            case "InternetExplorerDriver":
+                driver = new InternetExplorerDriver();
+                break;
+            case "GhostDriver":
+                driver = new PhantomJSDriver();
+                break;
+            default:
+                driver = new ChromeDriver();
+        }
+
         driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
     }
 

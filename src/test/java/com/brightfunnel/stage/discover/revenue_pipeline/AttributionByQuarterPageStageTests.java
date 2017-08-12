@@ -70,7 +70,7 @@ public class AttributionByQuarterPageStageTests extends BaseStageTestCase {
         // log into stage
         HomePage homePage = new HomePage(driver, Environments.STAGE);
         homePage.navigateTo();
-        homePage.login(USER_NAME, PASSWORD);
+        homePage.login(bfUsername, bfPassword);
         homePage.loginAsOrg(orgId);
 
 
@@ -101,7 +101,7 @@ public class AttributionByQuarterPageStageTests extends BaseStageTestCase {
         homePage.switchToNewTab();
         homePage = new HomePage(driver, Environments.PROD);
         homePage.navigateTo();
-        homePage.login(USER_NAME, PASSWORD);
+        homePage.login(bfUsername, bfPassword);
         homePage.loginAsOrg(orgId);
 
 

@@ -9,7 +9,7 @@
     </description>
 
     <properties>
-        <spring.version>3.2.0.RELEASE</spring.version>
+        <spring.version>4.0.6.RELEASE</spring.version>
         <seleniumn.version>2.44.0</seleniumn.version>
     </properties>
 
@@ -20,6 +20,13 @@
             <email>andy@brightfunnel.com</email>
         </developer>
     </developers>
+
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>
@@ -65,18 +72,22 @@
 
         <dependency>
             <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <version>${spring.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
+            <artifactId>spring-test</artifactId>
             <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
+            <artifactId>spring-orm</artifactId>
             <version>${spring.version}</version>
         </dependency>
 
@@ -94,8 +105,26 @@
 
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-firefox-driver</artifactId>
+            <version>${seleniumn.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-safari-driver</artifactId>
+            <version>${seleniumn.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-htmlunit-driver</artifactId>
             <version>${seleniumn.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.detro</groupId>
+            <artifactId>ghostdriver</artifactId>
+            <version>2.1.0</version>
         </dependency>
 
         <dependency>
@@ -111,6 +140,7 @@
             <version>1.0.1</version>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
 

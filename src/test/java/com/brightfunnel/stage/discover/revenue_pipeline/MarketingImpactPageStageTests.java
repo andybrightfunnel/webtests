@@ -4,7 +4,7 @@ import com.brightfunnel.pages.Environments;
 import com.brightfunnel.pages.HomePage;
 import com.brightfunnel.pages.discover.revenue_pipeline.MarketingImpactPage;
 import com.brightfunnel.stage.BaseStageTestCase;
-import org.junit.Before;
+import org.junit.Test;
 import org.openqa.selenium.By;
 
 import java.math.BigDecimal;
@@ -16,6 +16,7 @@ import java.util.List;
 /**
  * This is for stage testing the Marketing Impact Page
  */
+
 public class MarketingImpactPageStageTests extends BaseStageTestCase {
 
 
@@ -35,7 +36,9 @@ public class MarketingImpactPageStageTests extends BaseStageTestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testMarketingImpact() throws Exception{
+
 
         List<String> failedOrgs = new ArrayList<>();
 
@@ -71,7 +74,7 @@ public class MarketingImpactPageStageTests extends BaseStageTestCase {
             ", period: " + periodType + ", opptyType: " + opptyType + ", modelType: " + modelType);
         HomePage homePage = new HomePage(driver, Environments.STAGE);
         homePage.navigateTo();
-        homePage.login(USER_NAME, PASSWORD);
+        homePage.login(bfUsername, bfPassword);
         homePage.loginAsOrg(orgId);
 
         MarketingImpactPage marketingAnalyticsPage = new MarketingImpactPage(driver, Environments.STAGE);
@@ -97,7 +100,7 @@ public class MarketingImpactPageStageTests extends BaseStageTestCase {
         homePage.logout();
         homePage = new HomePage(driver, Environments.PROD);
         homePage.navigateTo();
-        homePage.login(USER_NAME, PASSWORD);
+        homePage.login(bfUsername, bfPassword);
         homePage.loginAsOrg(orgId);
 
         // go to the marketing analytics page
@@ -142,7 +145,7 @@ public class MarketingImpactPageStageTests extends BaseStageTestCase {
             ", period: " + periodType + ", opptyType: " + opptyType + ", modelType: " + modelType);
         HomePage homePage = new HomePage(driver, Environments.STAGE);
         homePage.navigateTo();
-        homePage.login(USER_NAME, PASSWORD);
+        homePage.login(bfUsername, bfPassword);
         homePage.loginAsOrg(orgId);
 
         MarketingImpactPage marketingAnalyticsPage = new MarketingImpactPage(driver, Environments.STAGE);
@@ -170,7 +173,7 @@ public class MarketingImpactPageStageTests extends BaseStageTestCase {
         homePage.switchToNewTab();
         homePage = new HomePage(driver, Environments.PROD);
         homePage.navigateTo();
-        homePage.login(USER_NAME, PASSWORD);
+        homePage.login(bfUsername, bfPassword);
         homePage.loginAsOrg(orgId);
 
         // go to the marketing analytics page

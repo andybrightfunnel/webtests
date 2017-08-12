@@ -82,37 +82,22 @@ public class AttributionTrendsPage extends BasePage {
         return headerMap;
     }
 
-    public String getStringDataValue(WebElement row, int dataCol) {
-        return row.findElement(By.xpath("//td["+dataCol+"]")).getText();
-    }
-
-    public BigDecimal getDecimalDataValue(WebElement row, int col) {
-        String val = row.findElement(By.xpath("//td["+col+"]")).getText();
-
-        BigDecimal decimalVal = null;
-        try{
-            decimalVal = new BigDecimal(val.replaceAll("[/\\D/g]", ""));
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return decimalVal;
-    }
 
     public Map getDataMapForRow(WebElement row) {
         Map<String,Object> rowData = new HashMap<>();
 
         String capaignGroup = getStringDataValue(row, 4);
-        BigDecimal cohort1 = getDecimalDataValue(row, 5);
-        BigDecimal cohort2 = getDecimalDataValue(row, 6);
-        BigDecimal cohort3 = getDecimalDataValue(row, 7);
-        BigDecimal cohort4 = getDecimalDataValue(row, 8);
-        BigDecimal cohort5 = getDecimalDataValue(row, 9);
-        BigDecimal cohort6 = getDecimalDataValue(row, 10);
-        BigDecimal cohort7 = getDecimalDataValue(row, 11);
-        BigDecimal cohort8 = getDecimalDataValue(row, 12);
-        BigDecimal cohort9 = getDecimalDataValue(row, 13);
-        BigDecimal cohort10 = getDecimalDataValue(row, 14);
-        BigDecimal cohort11 = getDecimalDataValue(row, 15);
+        Object cohort1 = getDecimalDataValue(row, 5);
+        Object cohort2 = getDecimalDataValue(row, 6);
+        Object cohort3 = getDecimalDataValue(row, 7);
+        Object cohort4 = getDecimalDataValue(row, 8);
+        Object cohort5 = getDecimalDataValue(row, 9);
+        Object cohort6 = getDecimalDataValue(row, 10);
+        Object cohort7 = getDecimalDataValue(row, 11);
+        Object cohort8 = getDecimalDataValue(row, 12);
+        Object cohort9 = getDecimalDataValue(row, 13);
+        Object cohort10 = getDecimalDataValue(row, 14);
+        Object cohort11 = getDecimalDataValue(row, 15);
 
         rowData.put(COL_1, capaignGroup);
         rowData.put(COL_2, cohort1);

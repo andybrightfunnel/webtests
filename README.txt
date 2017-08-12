@@ -19,12 +19,8 @@ Setup
 * Add Chrome driver to your path if you with to use ChromeDriver instead of HtmlUnitDriver
     export CHROME_DRIVER_HOME='/path-to-your-webtests-dir/drivers/chromedriver'
     export PATH="$PATH:$CHROME_DRIVER_HOME"
-* Add BF_USERNAME and BF_PASSWORD, and BF_ORGIDS environment variables.
-    ** add to your .bashrc file :
-      export BF_USERNAME="your bf email"
-      export BF_PASSWORD="your bf password"
-      export BF_ORGIDS="YOUR TARGET ORG IDS (comma separated)"
-          ex: export BF_ORGIDS="12,34,40"
+* Set your username, password, and targetOrgIds properties in test/resources/com/brightfunnel/config.proprties file
+
 
 
 Running The Tests

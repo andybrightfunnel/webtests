@@ -1,12 +1,12 @@
 package com.brightfunnel.pages;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
@@ -78,4 +78,27 @@ public class BasePage {
         driver.close();
         driver.switchTo().window(tabs.get(0));
     }
+
+    public void waitForHeadingToLoad() {
+        WebElement element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
+                until(ExpectedConditions.visibilityOfElementLocated(By.id("heading")));
+    }
+
+    public String getStringDataValue(WebElement row, int dataCol) {
+        return row.findElement(By.xpath("//td["+dataCol+"]")).getText();
+    }
+
+    public Object getDecimalDataValue(WebElement row, int col) {
+        String val = row.findElement(By.xpath("//td["+col+"]")).getText();
+
+        BigDecimal decimalVal = null;
+        try{
+            decimalVal = new BigDecimal(val.replaceAll("[/\\D/g]", ""));
+        }catch(Exception e){
+            e.printStackTrace();
+            return val;
+        }
+        return decimalVal;
+    }
+
 }
