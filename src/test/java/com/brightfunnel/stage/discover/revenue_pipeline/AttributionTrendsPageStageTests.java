@@ -5,17 +5,18 @@ import com.brightfunnel.pages.HomePage;
 import com.brightfunnel.pages.discover.revenue_pipeline.AttributionTrendsPage;
 import com.brightfunnel.stage.BaseStageTestCase;
 import org.junit.Before;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static com.brightfunnel.pages.BasePage.COL_1;
 
 public class AttributionTrendsPageStageTests extends BaseStageTestCase {
 
 
-    String[] revenueTypes = { "revenue", "pipeline"};
-    String[] attributionModels = { "sourced", "custom"};
+    String[] revenueTypes = { "revenue"/*, "pipeline"*/};
+    String[] attributionModels = { /*"sourced", */"custom"};
 
 
 
@@ -74,12 +75,16 @@ public class AttributionTrendsPageStageTests extends BaseStageTestCase {
         attributionTrendsPage.changeAttributionModel(revenueType, attributionModel);
 
         Map<String,Object> dataColumnHeaders = attributionTrendsPage.getDataTableHeaders();
-        List<Map> stageData = new LinkedList<>();
-        int [] rows = { 1, 3, 5, 7, 9, 11, 13, 15};
+        Map<String,Map> stageDataMap = new HashMap<>();
 
-        for(int row : rows){
-            Map<String,Object> rowData = attributionTrendsPage.getDataMapForRow(row);
-            stageData.add(rowData);
+        List<WebElement> dataRows = driver.findElements(By.xpath("id('revenueByChannelAcrossQtrsTable')/tbody/tr"));
+        for(WebElement dataRow : dataRows){
+            if(dataRow.getText().length() == 0)
+                continue;
+
+            Map<String,Object> rowData = attributionTrendsPage.getDataMapForRow(dataRow);
+            String key = (String)rowData.get(COL_1);
+            stageDataMap.put(key, rowData);
         }
 
         // log into prod in a separate tab
@@ -95,11 +100,14 @@ public class AttributionTrendsPageStageTests extends BaseStageTestCase {
         attributionTrendsPage.navigateTo();
         attributionTrendsPage.changeAttributionModel(revenueType, attributionModel);
 
-        List<Map> prodData = new LinkedList<>();
-
-        for(int row : rows){
+        dataRows = driver.findElements(By.xpath("id('revenueByChannelAcrossQtrsTable')/tbody/tr"));
+        Map<String,Map> prodDataMap = new HashMap<>();
+        for(WebElement row : dataRows){
+            if(row.getText().length() == 0)
+                continue;
             Map<String,Object> rowData = attributionTrendsPage.getDataMapForRow(row);
-            prodData.add(rowData);
+            String key = (String)rowData.get(COL_1);
+            prodDataMap.put(key, rowData);
         }
 
         // log out of both tabs
@@ -110,9 +118,13 @@ public class AttributionTrendsPageStageTests extends BaseStageTestCase {
         // go through both sets of data and compare results
         StringBuffer comparisonResult = new StringBuffer();
         String messageTemplate = "\t[OrgId: %s] - revenueType: %s, cohort: %s - %s\n";
-        for(int i=0; i < prodData.size(); i++){
-            Map stageRowData = stageData.get(i);
-            Map prodRowData = prodData.get(i);
+        for(String key : prodDataMap.keySet()){
+
+            Map stageRowData = stageDataMap.get(key);
+            Map prodRowData = prodDataMap.get(key);
+            if(stageRowData == null)
+                continue;
+
             String result = compareDataRows(dataColumnHeaders, stageRowData, prodRowData);
             if(result.length() > 0)
                 comparisonResult.append(comparisonResult.append(

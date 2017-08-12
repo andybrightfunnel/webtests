@@ -68,20 +68,22 @@ public class AttributionByQuarterPage extends BasePage {
 
     }
 
-    public String getStringDataValue(int dataRow, int dataCol) {
-        return driver.findElement(By.xpath("id('attrTable')/table/tbody/tr["+dataRow+"]/td["+dataCol+"]")).getText();
+    public String getStringDataValue(WebElement dataRow, int dataCol) {
+        return dataRow.findElement(By.xpath("//td["+dataCol+"]")).getText();
     }
 
-    public BigDecimal getDecimalDataValue(int row, int col) {
-        String val = driver.findElement(By.xpath("id('attrTable')/table/tbody/tr["
-                +row+"]/td["+col+"]")).getText();
+    public BigDecimal getDecimalDataValue(WebElement row, int col) {
+        String val = row.findElement(By.xpath("//td["+col+"]")).getText();
 
         return new BigDecimal(val.replaceAll("[$,]", ""));
     }
 
-    public Map getDataMapForRow(int row) {
+
+
+    public Map getDataMapForRow(WebElement row) {
         Map<String,Object> rowData = new HashMap<>();
 
+        String campaignGroup = getStringDataValue(row, 3);
         String capaignGroup = getStringDataValue(row, 3);
         BigDecimal firstTouchAmt = getDecimalDataValue(row, 4);
         BigDecimal lastTouchAmt = getDecimalDataValue(row, 5);
@@ -108,7 +110,6 @@ public class AttributionByQuarterPage extends BasePage {
         String col4Header = driver.findElement(By.xpath("id('attrTable')/table//tr/th[6]")).getText();
         String col5Header = driver.findElement(By.xpath("id('attrTable')/table//tr/th[7]")).getText();
         String col6Header = driver.findElement(By.xpath("id('attrTable')/table//tr/th[8]")).getText();
-        String col7Header = driver.findElement(By.xpath("id('attrTable')/table//tr/th[9]")).getText();
 
         Map<String,Object> columnHeaderMap = new HashMap<>();
         columnHeaderMap.put(COL_1, col1Header);
@@ -117,7 +118,6 @@ public class AttributionByQuarterPage extends BasePage {
         columnHeaderMap.put(COL_4, col4Header);
         columnHeaderMap.put(COL_5, col5Header);
         columnHeaderMap.put(COL_6, col6Header);
-        columnHeaderMap.put(COL_7, col7Header);
 
         return columnHeaderMap;
     }

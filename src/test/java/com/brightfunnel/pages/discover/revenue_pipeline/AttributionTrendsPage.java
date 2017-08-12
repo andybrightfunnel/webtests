@@ -82,19 +82,23 @@ public class AttributionTrendsPage extends BasePage {
         return headerMap;
     }
 
-    public String getStringDataValue(int dataRow, int dataCol) {
-        //id('revenueByChannelAcrossQtrsTable')/tbody/tr[1]/td[4]
-        return driver.findElement(By.xpath("id('revenueByChannelAcrossQtrsTable')/tbody/tr["+dataRow+"]/td["+dataCol+"]")).getText();
+    public String getStringDataValue(WebElement row, int dataCol) {
+        return row.findElement(By.xpath("//td["+dataCol+"]")).getText();
     }
 
-    public BigDecimal getDecimalDataValue(int row, int col) {
-        String val = driver.findElement(By.xpath("id('attrTable')/table/tbody/tr["
-                +row+"]/td["+col+"]")).getText();
+    public BigDecimal getDecimalDataValue(WebElement row, int col) {
+        String val = row.findElement(By.xpath("//td["+col+"]")).getText();
 
-        return new BigDecimal(val.replaceAll("[$,]", ""));
+        BigDecimal decimalVal = null;
+        try{
+            decimalVal = new BigDecimal(val.replaceAll("[/\\D/g]", ""));
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return decimalVal;
     }
 
-    public Map getDataMapForRow(int row) {
+    public Map getDataMapForRow(WebElement row) {
         Map<String,Object> rowData = new HashMap<>();
 
         String capaignGroup = getStringDataValue(row, 4);
