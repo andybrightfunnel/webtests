@@ -28,7 +28,15 @@ Running The Tests
 
 1. From the IDE:  You can select a package an individual test file, or test case. Right click -> run as (or optionally
                     debug as )
-2. From the terminal: Navigate to the webtests directory. Run command: mvn test
+2. From the terminal: Navigate to the webtests directory.
+  -- to run all tests:
+            Run command: mvn test
+  -- to run just the stage tests:
+            Run command: mvn test -Dtest=com.brightfunnel.stage.*
+  -- to run just the development tests:
+            Run command: mvn test -Dtest=com.brightfunnel.dev.*
+  -- to run a single test case:
+            Run command: mvn test -Dtest=com.brightfunnel.stage.discover.revenue_pipeline.MarketingImpactPageStageTests
 
 
 Reference
