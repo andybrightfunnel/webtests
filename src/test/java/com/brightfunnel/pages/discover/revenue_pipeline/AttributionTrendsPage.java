@@ -10,6 +10,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AttributionTrendsPage extends BasePage {
@@ -86,18 +87,20 @@ public class AttributionTrendsPage extends BasePage {
     public Map getDataMapForRow(WebElement row) {
         Map<String,Object> rowData = new HashMap<>();
 
-        String capaignGroup = getStringDataValue(row, 4);
-        Object cohort1 = getDecimalDataValue(row, 5);
-        Object cohort2 = getDecimalDataValue(row, 6);
-        Object cohort3 = getDecimalDataValue(row, 7);
-        Object cohort4 = getDecimalDataValue(row, 8);
-        Object cohort5 = getDecimalDataValue(row, 9);
-        Object cohort6 = getDecimalDataValue(row, 10);
-        Object cohort7 = getDecimalDataValue(row, 11);
-        Object cohort8 = getDecimalDataValue(row, 12);
-        Object cohort9 = getDecimalDataValue(row, 13);
-        Object cohort10 = getDecimalDataValue(row, 14);
-        Object cohort11 = getDecimalDataValue(row, 15);
+        List<WebElement> cols = row.findElements(By.tagName("td"));
+
+        String capaignGroup = cols.get(3).getText();
+        Object cohort1 = getDecimalDataValue(cols.get(4).getText());
+        Object cohort2 = getDecimalDataValue(cols.get(5).getText());
+        Object cohort3 = getDecimalDataValue(cols.get(6).getText());
+        Object cohort4 = getDecimalDataValue(cols.get(7).getText());
+        Object cohort5 = getDecimalDataValue(cols.get(8).getText());
+        Object cohort6 = getDecimalDataValue(cols.get(9).getText());
+        Object cohort7 = getDecimalDataValue(cols.get(10).getText());
+        Object cohort8 = getDecimalDataValue(cols.get(11).getText());
+        Object cohort9 = getDecimalDataValue(cols.get(12).getText());
+        Object cohort10 = getDecimalDataValue(cols.get(13).getText());
+        Object cohort11 = getDecimalDataValue(cols.get(14).getText());
 
         rowData.put(COL_1, capaignGroup);
         rowData.put(COL_2, cohort1);

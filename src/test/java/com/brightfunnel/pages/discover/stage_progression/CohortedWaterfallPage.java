@@ -9,6 +9,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CohortedWaterfallPage extends BasePage {
@@ -51,12 +52,12 @@ public class CohortedWaterfallPage extends BasePage {
     public Map<String, Object> getDataHeaderMap() {
         Map<String,Object> headerMap = new HashMap<>();
 
-        headerMap.put(COL_1, driver.findElement(By.xpath("id('rev-waterfall-table')//thead/tr/th[3]")));
-        headerMap.put(COL_2, driver.findElement(By.xpath("id('rev-waterfall-table')//thead/tr/th[4]")));
-        headerMap.put(COL_3, driver.findElement(By.xpath("id('rev-waterfall-table')//thead/tr/th[5]")));
-        headerMap.put(COL_4, driver.findElement(By.xpath("id('rev-waterfall-table')//thead/tr/th[6]")));
-        headerMap.put(COL_5, driver.findElement(By.xpath("id('rev-waterfall-table')//thead/tr/th[7]")));
-        headerMap.put(COL_6, driver.findElement(By.xpath("id('rev-waterfall-table')//thead/tr/th[8]")));
+        headerMap.put(COL_1, driver.findElement(By.xpath("id('rev-waterfall-table')//thead/tr/th[3]")).getText());
+        headerMap.put(COL_2, driver.findElement(By.xpath("id('rev-waterfall-table')//thead/tr/th[4]")).getText());
+        headerMap.put(COL_3, driver.findElement(By.xpath("id('rev-waterfall-table')//thead/tr/th[5]")).getText());
+        headerMap.put(COL_4, driver.findElement(By.xpath("id('rev-waterfall-table')//thead/tr/th[6]")).getText());
+        headerMap.put(COL_5, driver.findElement(By.xpath("id('rev-waterfall-table')//thead/tr/th[7]")).getText());
+        headerMap.put(COL_6, driver.findElement(By.xpath("id('rev-waterfall-table')//thead/tr/th[8]")).getText());
 
         return headerMap;
     }
@@ -64,12 +65,14 @@ public class CohortedWaterfallPage extends BasePage {
     public Map getDataRowMap(WebElement row) {
         Map<String, Object> rowData = new HashMap<>();
 
-        rowData.put(COL_1, getStringDataValue(row, 3));
-        rowData.put(COL_2, getDecimalDataValue(row, 4));
-        rowData.put(COL_3, getDecimalDataValue(row, 5));
-        rowData.put(COL_4, getDecimalDataValue(row, 6));
-        rowData.put(COL_5, getDecimalDataValue(row, 7));
-        rowData.put(COL_6, getDecimalDataValue(row, 8));
+        List<WebElement> cols = row.findElements(By.tagName("td"));
+
+        rowData.put(COL_1, cols.get(2).getText());
+        rowData.put(COL_2, getDecimalDataValue(cols.get(3).getText()));
+        rowData.put(COL_3, getDecimalDataValue(cols.get(4).getText()));
+        rowData.put(COL_4, getDecimalDataValue(cols.get(5).getText()));
+        rowData.put(COL_5, getDecimalDataValue(cols.get(6).getText()));
+        rowData.put(COL_6, getDecimalDataValue(cols.get(7).getText()));
 
 
         return rowData;

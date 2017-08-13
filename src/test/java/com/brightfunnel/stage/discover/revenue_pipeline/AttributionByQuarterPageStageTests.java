@@ -4,6 +4,7 @@ import com.brightfunnel.pages.Environments;
 import com.brightfunnel.pages.HomePage;
 import com.brightfunnel.pages.discover.revenue_pipeline.AttributionByQuarterPage;
 import com.brightfunnel.stage.BaseStageTestCase;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -31,6 +32,7 @@ public class AttributionByQuarterPageStageTests extends BaseStageTestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testAttributionByQuarterPage() throws Exception{
 
         List<String> failedOrgs = new ArrayList<>();

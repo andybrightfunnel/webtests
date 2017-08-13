@@ -20,24 +20,34 @@ public class HomePage extends BasePage{
        super(newDriver, environment);
     }
 
+    private String userName;
+    private String password;
+
+
     public void navigateTo(){
         driver.get(baseUrl);
     }
 
     public void login(String userName, String password){
 
-        driver.get(baseUrl + "/login/auth");
+        this.userName = userName;
+        this.password = password;
 
+        int count = 0;
         WebElement element = null;
 
-        try {
-            element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
-                    until(ExpectedConditions.visibilityOfElementLocated(By.id("password")));
+        while(count < 3){
 
-        }catch(Exception e){
-            logout();
-            element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
-                    until(ExpectedConditions.visibilityOfElementLocated(By.id("password")));
+            try {
+                driver.get(baseUrl + "/login/auth");
+
+                element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
+                        until(ExpectedConditions.visibilityOfElementLocated(By.id("password")));
+                break;
+            }catch(Exception e){
+
+            }
+            count++;
         }
 
         driver.findElement(By.id("password")).clear();
@@ -48,18 +58,42 @@ public class HomePage extends BasePage{
 
         element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
                 until(ExpectedConditions.visibilityOfElementLocated(By.id("heading")));
+
         assertTrue("Should be on the home dashboard page",
                 driver.getCurrentUrl().contains("/#/dashboard"));
     }
 
     public void loginAsOrg(int orgId){
 
-        String baseUrl = super.getCurrentUrlBase();
-        String url = baseUrl + "/LoginAs?username=org" + orgId;
 
-        driver.get(url);
-        WebElement element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
-                until(ExpectedConditions.visibilityOfElementLocated(By.id("heading")));
+        int count = 1;
+
+        while(count < 3){
+
+            try {
+                String baseUrl = super.getCurrentUrlBase();
+                String url = baseUrl + "LoginAs?username=org" + orgId;
+
+                driver.get(url);
+                WebElement element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
+                        until(ExpectedConditions.visibilityOfElementLocated(By.id("user")));
+
+                driver.findElement(By.id("user")).click();
+                String orgName = driver.findElement(By.id("user-org")).getText();
+                if (orgId == 12 || (orgId != 12 && !"BrightFunnel".equals(orgName))) {
+                    System.out.println("Successfully logged in as org:" + orgId);
+                    break;
+                }
+
+
+            }catch (Exception e){
+                if(driver.getCurrentUrl().contains("/login/auth"))
+                    login(userName, password);
+            }
+
+            count++;
+        }
+
         assertTrue("Should be on the home dashboard page",
                 driver.getCurrentUrl().contains("/#/dashboard"));
     }

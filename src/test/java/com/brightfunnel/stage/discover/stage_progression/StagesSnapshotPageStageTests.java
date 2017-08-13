@@ -4,6 +4,7 @@ import com.brightfunnel.pages.Environments;
 import com.brightfunnel.pages.HomePage;
 import com.brightfunnel.pages.discover.stage_progression.StagesSnapshotPage;
 import com.brightfunnel.stage.BaseStageTestCase;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -32,6 +33,7 @@ public class StagesSnapshotPageStageTests extends BaseStageTestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testStagesSnapshotPage() throws Exception{
 
         List<String> failedOrgs = new ArrayList<>();

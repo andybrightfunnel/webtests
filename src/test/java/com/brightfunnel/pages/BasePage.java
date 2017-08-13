@@ -5,11 +5,10 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.awt.*;
+import java.awt.List;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 public class BasePage {
 
@@ -95,10 +94,60 @@ public class BasePage {
         try{
             decimalVal = new BigDecimal(val.replaceAll("[/\\D/g]", ""));
         }catch(Exception e){
-            e.printStackTrace();
             return val;
         }
         return decimalVal;
     }
 
+    public Object getDecimalDataValue(String val) {
+
+        BigDecimal decimalVal = null;
+        try{
+            decimalVal = new BigDecimal(val.replaceAll("[/\\D/g]", ""));
+        }catch(Exception e){
+            return val;
+        }
+        return decimalVal;
+    }
+
+    /**
+     * Looks up the column header values for the displayed data table
+     * @return
+     */
+    public Map<String, Object> getDataHeaderMap(String tableName) {
+
+        Map<String,Object> headerMap = new HashMap<>();
+
+        String xpath = String.format("id('%s')/table/thead/tr/th", tableName);
+
+        java.util.List<WebElement> columns = driver.findElements(By.xpath(xpath));
+        int colIndex = 1;
+
+        for(WebElement col : columns){
+            String val = col.getText();
+
+            headerMap.put("col" + colIndex, col.getText());
+            colIndex++;
+        }
+
+        return headerMap;
+    }
+
+    public Map getDataRowMap(WebElement row) {
+        Map<String, Object> rowData = new HashMap<>();
+
+        java.util.List<WebElement> cols = row.findElements(By.tagName("td"));
+
+        for(int i=0; i < cols.size(); i++){
+            if(i==0)
+                continue;
+
+            WebElement col = cols.get(i);
+            String val = col.getText();
+            rowData.put("col"+i, getDecimalDataValue(cols.get(i).getText()));
+        }
+
+        return rowData;
+
+    }
 }

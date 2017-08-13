@@ -11,12 +11,14 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.safari.SafariDriver;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -45,7 +47,9 @@ public class BaseStageTestCase extends TestCase {
     @Value("${webdriver.type}")
     private String webDriverType;
 
-    public static final int ACCEPTABLE_DIFFERENCE_AMOUNT = 1_000;
+    @Value("${max.diff.percent}")
+    public Double maxDiffPercent;
+
 
     @Before
     public void setUp() throws Exception {
@@ -76,17 +80,34 @@ public class BaseStageTestCase extends TestCase {
                 String stageVal = (String)stageRowData.get(col);
                 String prodVal = (String) prodRowData.get(col);
                 if(!stageVal.equals(prodVal)){
-                    results.append("Stage campaign Ids don't match. Stage: "  + stageVal +
+                    results.append("Row Values Don't Match. Stage: "  + stageVal +
                             ", prod: " + prodVal );
                 }
             }else{
-                BigDecimal stageVal = (BigDecimal) stageRowData.get(col);
-                BigDecimal prodVal = (BigDecimal) prodRowData.get(col);
 
-                BigDecimal diff = prodVal.subtract(stageVal).abs();
-                if(diff.doubleValue() > ACCEPTABLE_DIFFERENCE_AMOUNT){
-                    results.append(String.format(messageTemplate, header, stageRowData.get(COL_1), stageVal, prodVal));
+                Object stageVal =  stageRowData.get(col);
+                Object prodVal =  prodRowData.get(col);
+
+                if(prodVal == null){
+                    results.append("Missing campaign group on production: " + col);
+                    continue;
                 }
+
+                if(stageVal instanceof BigDecimal && prodVal instanceof BigDecimal){
+                    BigDecimal diff = ((BigDecimal)prodVal).subtract(((BigDecimal)stageVal)).abs();
+                    if(diff.doubleValue() > 0){
+                        double diffPercent = diff.doubleValue() / ((BigDecimal)prodVal).doubleValue();
+                        if(diffPercent > maxDiffPercent){
+                            results.append(String.format(messageTemplate, header, stageRowData.get(COL_1), stageVal, prodVal));
+                        }
+                    }
+
+                }else{
+                    if(!stageVal.toString().equals(prodVal.toString())){
+                        results.append(String.format(messageTemplate, header, stageRowData.get(COL_1), stageVal, prodVal));
+                    }
+                }
+
             }
 
         }
@@ -108,7 +129,12 @@ public class BaseStageTestCase extends TestCase {
 
         switch (webDriverType){
             case "ChromeDriver":
-                driver = new ChromeDriver();
+                DesiredCapabilities capabilities = DesiredCapabilities.chrome();
+                capabilities.setCapability("chrome.switches", Arrays.asList(new String[]{
+                    "--start-maximized",
+                    "--disable-popup-blocking" }));
+                capabilities.setCapability("--start-maximized", false);
+                driver = new ChromeDriver(capabilities);
                 break;
             case "HtmlUnitDriver":
                 driver = new HtmlUnitDriver();

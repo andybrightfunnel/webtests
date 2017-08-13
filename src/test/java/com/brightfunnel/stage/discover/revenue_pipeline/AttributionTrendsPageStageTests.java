@@ -4,6 +4,7 @@ import com.brightfunnel.pages.Environments;
 import com.brightfunnel.pages.HomePage;
 import com.brightfunnel.pages.discover.revenue_pipeline.AttributionTrendsPage;
 import com.brightfunnel.stage.BaseStageTestCase;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -14,8 +15,8 @@ import static com.brightfunnel.pages.BasePage.COL_1;
 public class AttributionTrendsPageStageTests extends BaseStageTestCase {
 
 
-    String[] revenueTypes = { "revenue"/*, "pipeline"*/};
-    String[] attributionModels = { /*"sourced", */"custom"};
+    String[] revenueTypes = { "revenue", "pipeline"};
+    String[] attributionModels = { "sourced", "custom"};
 
 
 
@@ -26,6 +27,7 @@ public class AttributionTrendsPageStageTests extends BaseStageTestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testAttributionTrendsPage() throws Exception{
 
         List<String> failedOrgs = new ArrayList<>();
@@ -109,10 +111,6 @@ public class AttributionTrendsPageStageTests extends BaseStageTestCase {
             prodDataMap.put(key, rowData);
         }
 
-        // log out of both tabs
-        homePage.logout();
-        homePage.closeNewTab();
-        homePage.logout();
 
         // go through both sets of data and compare results
         StringBuffer comparisonResult = new StringBuffer();
@@ -129,6 +127,12 @@ public class AttributionTrendsPageStageTests extends BaseStageTestCase {
                 comparisonResult.append(comparisonResult.append(
                         String.format(messageTemplate, orgId, revenueType, attributionModel, result)));
         }
+
+        // log out of both tabs
+        homePage.logout();
+        homePage.closeNewTab();
+        homePage.logout();
+
         return comparisonResult.toString();
 
     }
