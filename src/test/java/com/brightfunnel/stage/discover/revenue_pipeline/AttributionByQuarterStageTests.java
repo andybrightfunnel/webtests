@@ -5,11 +5,8 @@ import com.brightfunnel.pages.HomePage;
 import com.brightfunnel.pages.discover.revenue_pipeline.AttributionByQuarterPage;
 import com.brightfunnel.stage.BaseStageTestCase;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +19,7 @@ public class AttributionByQuarterStageTests extends BaseStageTestCase {
 
 
     String[] revenueTypes = { "booked", "pipeline"};
-    String[] cohorts = { "Q316", "Q416", "Q117"};
+    String[] cohorts = { "Q117", "Q416" };
 
 
     /**
@@ -79,26 +76,17 @@ public class AttributionByQuarterStageTests extends BaseStageTestCase {
         // go to attribution by quarter page
         AttributionByQuarterPage attributionByQuarterPage = new AttributionByQuarterPage(driver, Environments.STAGE);
         attributionByQuarterPage.navigateTo();
-
         attributionByQuarterPage.changeAttributionModel(revenueType, cohort);
 
-        Map columnHeaderMap = attributionByQuarterPage.getDataColumnHeaderMap();
+        String headersXpath = "id('attrTable')/table/thead/tr/th";
+
+        Map columnHeaderMap = getDataHeaderMap(headersXpath);
+        String rowsXpath = "id('attrTable')/table/tbody/tr";
 
         // pull data for first few rows
-        List<WebElement> dataRows = driver.findElements(By.xpath("id('attrTable')/table/tbody/tr"));
+        Map<String,Map> stageDataMap = getTableDataMap(attributionByQuarterPage, rowsXpath);
 
-        Map<String,Map> stageDataMap = new HashMap<>();
-        for(int i=0; i < dataRows.size(); i++){
-
-            WebElement rowElement = dataRows.get(i);
-
-            Map rowData = attributionByQuarterPage.getDataMapForRow(rowElement);
-            String key = (String)rowData.get(COL_1);
-            stageDataMap.put(key, rowData);
-        }
-
-        // open up homepage on prod
-       // homePage.logout();
+        // homePage.logout();
         homePage.openNewTab();
         homePage.switchToNewTab();
         homePage = new HomePage(driver, Environments.PROD);
@@ -107,39 +95,16 @@ public class AttributionByQuarterStageTests extends BaseStageTestCase {
         homePage.loginAsOrg(orgId);
 
 
-        StringBuffer comparisonResult = new StringBuffer();
-
         // go to attribution by quarter page on prod
         attributionByQuarterPage = new AttributionByQuarterPage(driver, Environments.PROD);
         attributionByQuarterPage.navigateTo();
-
         attributionByQuarterPage.changeAttributionModel(revenueType, cohort);
-        dataRows = driver.findElements(By.xpath("id('attrTable')/table/tbody/tr"));
 
-        Map<String,Map> prodDataMap = new HashMap<>();
-        for(int i=0; i < dataRows.size(); i++){
+        Map<String,Map> prodDataMap = getTableDataMap(attributionByQuarterPage, rowsXpath);
 
-            WebElement rowElement = dataRows.get(i);
+        StringBuffer comparisonResult = compareDataSets(orgId, columnHeaderMap, stageDataMap, prodDataMap);
 
-            Map rowData = attributionByQuarterPage.getDataMapForRow(rowElement);
-            String key = (String)rowData.get(COL_1);
-            prodDataMap.put(key, rowData);
-        }
-        homePage.logout();
-        homePage.closeNewTab();
-        homePage.logout();
 
-        // go through both sets of data and compare results
-        String messageTemplate = "\t[OrgId: %s] - revenueType: %s, cohort: %s - %s\n";
-        for(String key : prodDataMap.keySet()){
-
-           Map stageRowData = stageDataMap.get(key);
-           Map prodRowData = prodDataMap.get(key);
-           String result = compareDataRows(columnHeaderMap, stageRowData, prodRowData);
-           if(result.length() > 0)
-               comparisonResult.append(comparisonResult.append(
-                       String.format(messageTemplate, orgId, revenueType, cohort, result)));
-        }
         return comparisonResult.toString();
 
     }

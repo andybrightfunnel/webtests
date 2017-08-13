@@ -5,8 +5,6 @@ import com.brightfunnel.pages.Environments;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.*;
 
@@ -30,36 +28,13 @@ public class HistoricalAveragesPage extends BasePage {
         cal.add(Calendar.DAY_OF_WEEK, -7);
         Date endDate = cal.getTime();
         Date startDate = new Date();
-        String extraPath = String.format("&startDate=%s&endDate=%s", startDate, endDate);
+        String extraPath = String.format("&startDate=%s&endDate=%s", startDate.getTime(), endDate.getTime());
         driver.get(baseUrl + basePath + extraPath);
-        WebElement element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
-                until(ExpectedConditions.visibilityOfElementLocated(By.id("heading")));
 
         // todo: add asserts to verify page loads correctly
+        waitForHeadingToLoad();
     }
 
-    /**
-     * Looks up the column header values for the displayed data table
-     * @return
-     */
-    public Map<String, Object> getDataHeaderMap() {
-
-        Map<String,Object> headerMap = new HashMap<>();
-
-        List<WebElement> columns = driver.findElements(By.xpath("id('bottom-right-bottom')/div/div/div[2]/div/table/thead/tr/th"));
-        int colIndex = 1;
-
-        for(WebElement col : columns){
-            String val = col.getText();
-            if(val.length() == 0)
-                continue;
-
-            headerMap.put("col" + colIndex, val);
-            colIndex++;
-        }
-
-        return headerMap;
-    }
 
     public Map getDataRowMap(WebElement row) {
         Map<String, Object> rowData = new HashMap<>();
@@ -88,7 +63,7 @@ public class HistoricalAveragesPage extends BasePage {
 
 
         String targetPath = String.format("#/analyze/campaigns/historical-averages-campaign-group?cohort=quarter2Date&groupType=campaign?startDate=%s&endDate=%s&" +
-                "cohort=%s&groupType=campaign", startDate, endDate, cohort);
+                "cohort=%s&groupType=campaign", startDate.getTime(), endDate.getTime(), cohort);
 
         driver.get(baseUrl + targetPath);
 

@@ -79,7 +79,7 @@ public class StagesSnapshotStageTests extends BaseStageTestCase {
         stagesSnapshotPage.navigateTo();
 
         // change cohort
-        stagesSnapshotPage.changeCohort(cohort);
+        stagesSnapshotPage.setFilters(cohort);
 
         // pull all of the data table rows
         List<WebElement> dataRows =
@@ -107,7 +107,7 @@ public class StagesSnapshotStageTests extends BaseStageTestCase {
         stagesSnapshotPage.navigateTo();
 
         // change cohort
-        stagesSnapshotPage.changeCohort(cohort);
+        stagesSnapshotPage.setFilters(cohort);
 
         // pull all of the data table rows
         dataRows = driver.findElements(By.xpath("//div[contains(@class, 'panel-group')]//h4/a/span/div\n"));

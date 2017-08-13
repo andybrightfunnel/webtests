@@ -83,38 +83,4 @@ public class AttributionTrendsPage extends BasePage {
         return headerMap;
     }
 
-
-    public Map getDataMapForRow(WebElement row) {
-        Map<String,Object> rowData = new HashMap<>();
-
-        List<WebElement> cols = row.findElements(By.tagName("td"));
-
-        String capaignGroup = cols.get(3).getText();
-        Object cohort1 = getDecimalDataValue(cols.get(4).getText());
-        Object cohort2 = getDecimalDataValue(cols.get(5).getText());
-        Object cohort3 = getDecimalDataValue(cols.get(6).getText());
-        Object cohort4 = getDecimalDataValue(cols.get(7).getText());
-        Object cohort5 = getDecimalDataValue(cols.get(8).getText());
-        Object cohort6 = getDecimalDataValue(cols.get(9).getText());
-        Object cohort7 = getDecimalDataValue(cols.get(10).getText());
-        Object cohort8 = getDecimalDataValue(cols.get(11).getText());
-        Object cohort9 = getDecimalDataValue(cols.get(12).getText());
-        Object cohort10 = getDecimalDataValue(cols.get(13).getText());
-        Object cohort11 = getDecimalDataValue(cols.get(14).getText());
-
-        rowData.put(COL_1, capaignGroup);
-        rowData.put(COL_2, cohort1);
-        rowData.put(COL_3, cohort2);
-        rowData.put(COL_4, cohort3);
-        rowData.put(COL_5, cohort4);
-        rowData.put(COL_6, cohort5);
-        rowData.put(COL_7, cohort6);
-        rowData.put(COL_8, cohort7);
-        rowData.put(COL_9, cohort8);
-        rowData.put(COL_10, cohort9);
-        rowData.put(COL_11, cohort10);
-        rowData.put(COL_12, cohort11);
-
-        return rowData;
-    }
 }

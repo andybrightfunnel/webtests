@@ -36,7 +36,7 @@ public class StagesSnapshotPage extends BasePage {
         // todo: add asserts to verify page loads correctly
     }
 
-    public void changeCohort(String cohort) {
+    public void setFilters(String cohort) {
 
         Date startTime = new Date();
         Calendar cal = Calendar.getInstance();
@@ -50,7 +50,6 @@ public class StagesSnapshotPage extends BasePage {
 
         driver.get(baseUrl + targetPath);
 
-        WebElement element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
-                until(ExpectedConditions.visibilityOfElementLocated(By.id("heading")));
+        waitForHeadingToLoad();
     }
 }

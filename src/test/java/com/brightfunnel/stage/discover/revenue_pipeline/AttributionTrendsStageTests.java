@@ -76,17 +76,9 @@ public class AttributionTrendsStageTests extends BaseStageTestCase {
         attributionTrendsPage.changeAttributionModel(revenueType, attributionModel);
 
         Map<String,Object> dataColumnHeaders = attributionTrendsPage.getDataTableHeaders();
-        Map<String,Map> stageDataMap = new HashMap<>();
+        String rowsXpath = "id('revenueByChannelAcrossQtrsTable')/tbody/tr";
 
-        List<WebElement> dataRows = driver.findElements(By.xpath("id('revenueByChannelAcrossQtrsTable')/tbody/tr"));
-        for(WebElement dataRow : dataRows){
-            if(dataRow.getText().length() == 0)
-                continue;
-
-            Map<String,Object> rowData = attributionTrendsPage.getDataMapForRow(dataRow);
-            String key = (String)rowData.get(COL_1);
-            stageDataMap.put(key, rowData);
-        }
+        Map<String,Map> stageDataMap = getTableDataMap(attributionTrendsPage, rowsXpath);
 
         // log into prod in a separate tab
         homePage.openNewTab();
@@ -101,32 +93,11 @@ public class AttributionTrendsStageTests extends BaseStageTestCase {
         attributionTrendsPage.navigateTo();
         attributionTrendsPage.changeAttributionModel(revenueType, attributionModel);
 
-        dataRows = driver.findElements(By.xpath("id('revenueByChannelAcrossQtrsTable')/tbody/tr"));
-        Map<String,Map> prodDataMap = new HashMap<>();
-        for(WebElement row : dataRows){
-            if(row.getText().length() == 0)
-                continue;
-            Map<String,Object> rowData = attributionTrendsPage.getDataMapForRow(row);
-            String key = (String)rowData.get(COL_1);
-            prodDataMap.put(key, rowData);
-        }
+        Map<String,Map> prodDataMap = getTableDataMap(attributionTrendsPage, rowsXpath);
 
 
         // go through both sets of data and compare results
-        StringBuffer comparisonResult = new StringBuffer();
-        String messageTemplate = "\t[OrgId: %s] - revenueType: %s, cohort: %s - %s\n";
-        for(String key : prodDataMap.keySet()){
-
-            Map stageRowData = stageDataMap.get(key);
-            Map prodRowData = prodDataMap.get(key);
-            if(stageRowData == null)
-                continue;
-
-            String result = compareDataRows(dataColumnHeaders, stageRowData, prodRowData);
-            if(result.length() > 0)
-                comparisonResult.append(comparisonResult.append(
-                        String.format(messageTemplate, orgId, revenueType, attributionModel, result)));
-        }
+        StringBuffer comparisonResult = compareDataSets(orgId, dataColumnHeaders, stageDataMap, prodDataMap);
 
         // log out of both tabs
         homePage.logout();

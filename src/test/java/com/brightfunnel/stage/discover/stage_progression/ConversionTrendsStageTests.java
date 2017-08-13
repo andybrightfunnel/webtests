@@ -32,7 +32,7 @@ public class ConversionTrendsStageTests extends BaseStageTestCase {
      * @throws Exception
      */
     @Test
-    public void testCohortedWaterFallPage_totals() throws Exception{
+    public void testConversionTrendsPage_totals() throws Exception{
 
         List<String> failedOrgs = new ArrayList<>();
 
@@ -80,10 +80,10 @@ public class ConversionTrendsStageTests extends BaseStageTestCase {
 
         conversionTrendsPage.setStageSettings(startingStage, endingStage);
 
-        String dataTableName = "rev-waterfall-table";
-        String rowsXpath = String.format("id('%s')/tbody/tr", dataTableName);
+        String headerXpath = "id('rev-waterfall-table')/table/thead/tr/th";
+        String rowsXpath = "id('rev-waterfall-table')/tbody/tr";
         // get column headers for data table
-        Map<String,Object> columnHeaderMap = conversionTrendsPage.getDataHeaderMap(dataTableName);
+        Map<String,Object> columnHeaderMap = conversionTrendsPage.getDataHeaderMap(headerXpath);
         Map<String,Map> stageDataMap = new HashMap<>();
         List<WebElement> dataRows = driver.findElements(By.xpath(rowsXpath));
 

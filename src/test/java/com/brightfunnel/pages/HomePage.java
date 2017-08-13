@@ -43,6 +43,15 @@ public class HomePage extends BasePage{
 
                 element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
                         until(ExpectedConditions.visibilityOfElementLocated(By.id("password")));
+
+                driver.findElement(By.id("password")).clear();
+                driver.findElement(By.id("password")).sendKeys(password);
+                driver.findElement(By.id("username")).clear();
+                driver.findElement(By.id("username")).sendKeys(userName);
+                driver.findElement(By.id("loginButton")).click();
+
+                waitForHeadingToLoad();
+
                 break;
             }catch(Exception e){
 
@@ -50,14 +59,7 @@ public class HomePage extends BasePage{
             count++;
         }
 
-        driver.findElement(By.id("password")).clear();
-        driver.findElement(By.id("password")).sendKeys(password);
-        driver.findElement(By.id("username")).clear();
-        driver.findElement(By.id("username")).sendKeys(userName);
-        driver.findElement(By.id("loginButton")).click();
 
-        element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
-                until(ExpectedConditions.visibilityOfElementLocated(By.id("heading")));
 
         assertTrue("Should be on the home dashboard page",
                 driver.getCurrentUrl().contains("/#/dashboard"));

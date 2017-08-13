@@ -64,10 +64,17 @@ public class CampaignListPage extends BasePage {
 
         List<WebElement> cols = row.findElements(By.tagName("td"));
 
+        int colIndex = 1;
+
         for(int i=0; i < cols.size(); i++){
             WebElement col = cols.get(i);
             String val = col.getText();
-            rowData.put("col"+i, getDecimalDataValue(cols.get(i).getText()));
+
+            if(val.length() == 0 && rowData.isEmpty())
+                continue;
+
+            rowData.put("col"+colIndex, getDecimalDataValue(val));
+            colIndex++;
         }
 
         return rowData;

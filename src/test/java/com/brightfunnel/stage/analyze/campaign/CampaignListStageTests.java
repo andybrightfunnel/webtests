@@ -7,15 +7,10 @@ import com.brightfunnel.pages.discover.stage_progression.StagesSnapshotPage;
 import com.brightfunnel.pages.discover.stage_progression.VelocityOfCampaignGroupPage;
 import com.brightfunnel.stage.BaseStageTestCase;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static com.brightfunnel.pages.BasePage.COL_1;
 
 public class CampaignListStageTests extends BaseStageTestCase {
 
@@ -82,18 +77,11 @@ public class CampaignListStageTests extends BaseStageTestCase {
         campaignListPage.changeCohortAndModel(cohort, model, dataSet);
 
         // get column headers for data table
-        Map<String,Object> columnHeaderMap = campaignListPage.getDataHeaderMap();
-        Map<String,Map> stageDataMap = new HashMap<>();
-        List<WebElement> dataRows = driver.findElements(By.xpath("id('campaign-groups-tab')/table/tbody/tr"));
+        String headerXPath = "id('campaign-groups-tab')/table/tbody/tr";
+        String dataXPath = "id('campaign-groups-tab')/table/tbody/tr";
 
-        for(WebElement row : dataRows){
-            Map rowData = campaignListPage.getDataRowMap(row);
-            String key = (String) rowData.get(COL_1);
-
-            if(key.length() == 0)
-                continue;
-            stageDataMap.put(key, rowData);
-        }
+        Map<String,Object> columnHeaderMap = getDataHeaderMap(headerXPath);
+        Map<String,Map> stageDataMap = getTableDataMap(campaignListPage, dataXPath);
 
         // log into prod
         homePage.openNewTab();
@@ -109,44 +97,14 @@ public class CampaignListStageTests extends BaseStageTestCase {
         campaignListPage.changeCohortAndModel(cohort, model, dataSet);
 
         // get column headers for data table
-        Map<String,Map> prodDataMap = new HashMap<>();
-        dataRows = driver.findElements(By.xpath("id('campaign-groups-tab')/table/tbody/tr"));
+        Map<String,Map> prodDataMap = getTableDataMap(campaignListPage, dataXPath);
 
-        for(WebElement row : dataRows){
-            Map rowData = campaignListPage.getDataRowMap(row);
-            String key = (String) rowData.get(COL_1);
-
-            if(key.length() == 0)
-                continue;
-            prodDataMap.put(key, rowData);
-        }
+        // go through both data sets and compare
+        StringBuffer comparisonResult = compareDataSets(orgId, columnHeaderMap, stageDataMap, prodDataMap);
 
         homePage.logout();
         homePage.closeNewTab();
         homePage.logout();
-
-        // go through both data sets and compare
-        StringBuffer comparisonResult = new StringBuffer();
-        String messageTemplate = "%s - %s match fail for %s.- [%s]";
-        for(String key : stageDataMap.keySet()){
-            String result = "";
-
-            Map stageRowData = stageDataMap.get(key);
-
-            Map prodRowData = prodDataMap.get(key);
-            String columnHeader = (String) columnHeaderMap.get(COL_1);
-            String rowName = (String) stageRowData.get(COL_1);
-            if(prodRowData == null){
-                System.out.println("Missing campaign group:" + key + " in production");
-                continue;
-            }
-
-            result = compareDataRows(columnHeaderMap, stageRowData, prodRowData);
-            if(result.length() > 0)
-                comparisonResult.append(comparisonResult.append(
-                        String.format(messageTemplate, orgId, columnHeader, rowName, result)));
-        }
-
 
         return comparisonResult.toString();
 

@@ -16,7 +16,7 @@ public class BasePage {
     public final String DEV_BASE_URL = "https://dev.brightfunnel.com";
     public final String STAGE_BASE_URL = "https://stage.brightfunnel.com";
     public final String PROD_BASE_URL = "https://app.brightfunnel.com";
-    public static final int TIME_OUT_IN_SECONDS = 120;
+    public static final int TIME_OUT_IN_SECONDS = 60;
 
     // Data column map keys
     public static final String COL_1 = "col1";
@@ -103,22 +103,21 @@ public class BasePage {
 
         BigDecimal decimalVal = null;
         try{
-            decimalVal = new BigDecimal(val.replaceAll("[/\\D/g]", ""));
+            decimalVal = new BigDecimal(val.replaceAll("[$,()]", ""));
         }catch(Exception e){
             return val;
         }
         return decimalVal;
     }
 
+
     /**
      * Looks up the column header values for the displayed data table
      * @return
      */
-    public Map<String, Object> getDataHeaderMap(String tableName) {
+    public Map<String, Object> getDataHeaderMap(String xpath) {
 
         Map<String,Object> headerMap = new HashMap<>();
-
-        String xpath = String.format("id('%s')/table/thead/tr/th", tableName);
 
         java.util.List<WebElement> columns = driver.findElements(By.xpath(xpath));
         int colIndex = 1;
@@ -126,7 +125,7 @@ public class BasePage {
         for(WebElement col : columns){
             String val = col.getText();
 
-            headerMap.put("col" + colIndex, col.getText());
+            headerMap.put("col" + colIndex, val);
             colIndex++;
         }
 
@@ -138,13 +137,18 @@ public class BasePage {
 
         java.util.List<WebElement> cols = row.findElements(By.tagName("td"));
 
+        int rowIndex=1;
+
         for(int i=0; i < cols.size(); i++){
-            if(i==0)
-                continue;
 
             WebElement col = cols.get(i);
             String val = col.getText();
-            rowData.put("col"+i, getDecimalDataValue(cols.get(i).getText()));
+
+            if(val.length() == 0 && rowData.isEmpty()) // ignore begining empty cols
+                continue;
+
+            rowData.put("col"+(rowIndex), getDecimalDataValue(val));
+            rowIndex++;
         }
 
         return rowData;

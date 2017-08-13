@@ -83,19 +83,11 @@ public class CampaignsTrendingStageTests extends BaseStageTestCase {
         campaignsTrendingPage.changeCohortAndModel(cohort, model, dataSet, field, freqType);
 
         // get column headers for data table
-        String tableName ="bottom-right-bottom";
-        Map<String,Object> columnHeaderMap = campaignsTrendingPage.getDataHeaderMap(tableName);
-        Map<String,Map> stageDataMap = new HashMap<>();
-        List<WebElement> dataRows = driver.findElements(By.xpath("id('bottom-right-bottom')/div/div/div[3]/div[2]/table/tbody/tr"));
+        String headerXPath = "id('bottom-right-bottom')/table/thead/tr/th";
+        String dataXPath = "id('bottom-right-bottom')/div/div/div[3]/div[2]/table/tbody/tr";
 
-        for(WebElement row : dataRows){
-            Map rowData = campaignsTrendingPage.getDataRowMap(row);
-            String key = (String) rowData.get(COL_1);
-
-            if(key.length() == 0)
-                continue;
-            stageDataMap.put(key, rowData);
-        }
+        Map<String,Object> columnHeaderMap = getDataHeaderMap(headerXPath);
+        Map<String,Map> stageDataMap = getTableDataMap(campaignsTrendingPage, dataXPath);
 
         // log into prod
         homePage.openNewTab();
@@ -110,48 +102,16 @@ public class CampaignsTrendingStageTests extends BaseStageTestCase {
         campaignsTrendingPage.navigateTo();
         campaignsTrendingPage.changeCohortAndModel(cohort, model, dataSet, field, freqType);
 
-        Map<String,Map> prodDataMap = new HashMap<>();
-        dataRows = driver.findElements(By.xpath("id('bottom-right-bottom')/div/div/div[3]/div[2]/table/tbody/tr"));
+        Map<String,Map> prodDataMap = getTableDataMap(campaignsTrendingPage, dataXPath);
 
-        for(WebElement row : dataRows){
-            Map rowData = campaignsTrendingPage.getDataRowMap(row);
-            String key = (String) rowData.get(COL_1);
 
-            if(key.length() == 0)
-                continue;
-            prodDataMap.put(key, rowData);
-        }
-
+        StringBuffer comparisonResult = compareDataSets(orgId, columnHeaderMap, stageDataMap, prodDataMap);
 
         homePage.logout();
         homePage.closeNewTab();
         homePage.logout();
 
-        // go through both data sets and compare
-        StringBuffer comparisonResult = new StringBuffer();
-        String messageTemplate = "%s - %s match fail for %s.- [%s]";
-        for(String key : stageDataMap.keySet()){
-            String result = "";
-
-            Map stageRowData = stageDataMap.get(key);
-
-            Map prodRowData = prodDataMap.get(key);
-            String columnHeader = (String) columnHeaderMap.get(COL_1);
-            String rowName = (String) stageRowData.get(COL_1);
-            if(prodRowData == null){
-                System.out.println("Missing group:" + key + " in production");
-                continue;
-            }
-
-            result = compareDataRows(columnHeaderMap, stageRowData, prodRowData);
-            if(result.length() > 0)
-                comparisonResult.append(comparisonResult.append(
-                        String.format(messageTemplate, orgId, columnHeader, rowName, result)));
-        }
-
-
         return comparisonResult.toString();
-
     }
 
 }

@@ -6,20 +6,15 @@ import com.brightfunnel.pages.discover.stage_progression.CohortedWaterfallPage;
 import com.brightfunnel.pages.discover.stage_progression.StagesSnapshotPage;
 import com.brightfunnel.stage.BaseStageTestCase;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static com.brightfunnel.pages.BasePage.COL_1;
 
 public class CohortedWaterfallStageTests extends BaseStageTestCase {
 
 
-    String[] cohorts = { "Q217", "Q117", "Q416", "Q316"};
+    String[] cohorts = { "Q217", "Q416" };
     int [] startStageSequences = { 1, 2, 3, 4 };
 
 
@@ -81,17 +76,9 @@ public class CohortedWaterfallStageTests extends BaseStageTestCase {
         cohortedWaterfallPage.changeCohortAndSequence(cohort, startingStageSequence);
 
         Map<String,Object> columnHeaderMap = cohortedWaterfallPage.getDataHeaderMap();
-        Map<String,Map> stageDataMap = new HashMap<>();
-        List<WebElement> dataRows = driver.findElements(By.xpath("id('rev-waterfall-data')//tr[@class='ng-scope collaps-init pointer']"));
+        String rowExpath = "id('rev-waterfall-data')//tr[@class='ng-scope collaps-init pointer']";
 
-        for(WebElement row : dataRows){
-            Map rowData = cohortedWaterfallPage.getDataRowMap(row);
-            String key = (String) rowData.get(COL_1);
-
-            if(key.length() == 0)
-                continue;
-            stageDataMap.put(key, rowData);
-        }
+        Map<String,Map> stageDataMap = getTableDataMap(cohortedWaterfallPage, rowExpath);
 
         // log into prod
         homePage.openNewTab();
@@ -104,40 +91,16 @@ public class CohortedWaterfallStageTests extends BaseStageTestCase {
         // go to the CohortedWaterfall page on stage
         cohortedWaterfallPage = new CohortedWaterfallPage(driver, Environments.PROD);
         cohortedWaterfallPage.navigateTo();
-
         cohortedWaterfallPage.changeCohortAndSequence(cohort, startingStageSequence);
 
-        Map<String,Map> prodDataMap = new HashMap<>();
-        List<WebElement> prodDataRows = driver.findElements(By.xpath("id('rev-waterfall-data')//tr[@class='ng-scope collaps-init pointer']"));
+        Map<String,Map> prodDataMap = getTableDataMap(cohortedWaterfallPage, rowExpath);
 
-        for(WebElement row : prodDataRows){
-            Map rowData = cohortedWaterfallPage.getDataRowMap(row);
-            String key = (String) rowData.get(COL_1);
-            prodDataMap.put(key, rowData);
-        }
+        // go through both data sets and compare
+        StringBuffer comparisonResult = compareDataSets(orgId, columnHeaderMap, stageDataMap, prodDataMap);
 
         homePage.logout();
         homePage.closeNewTab();
         homePage.logout();
-
-        // go through both data sets and compare
-        StringBuffer comparisonResult = new StringBuffer();
-        String messageTemplate = "%s - %s match fail for %s.- [%s]";
-        for(String key : stageDataMap.keySet()){
-            Map stageRowData = stageDataMap.get(key);
-            Map prodRowData = prodDataMap.get(key);
-            String columnHeader = (String) columnHeaderMap.get(COL_1);
-            String rowName = (String) stageRowData.get(COL_1);
-            if(prodDataMap == null){
-                System.out.println("Missing " + columnHeader + " in production");
-                continue;
-            }
-
-            String result = compareDataRows(columnHeaderMap, stageRowData, prodRowData);
-            if(result.length() > 0)
-                comparisonResult.append(comparisonResult.append(
-                        String.format(messageTemplate, orgId, columnHeader, rowName, result)));
-        }
 
 
         return comparisonResult.toString();
