@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * Stage tests for the Stages Snapshot Page
  */
-public class StagesSnapshotPageStageTests extends BaseStageTestCase {
+public class StagesSnapshotStageTests extends BaseStageTestCase {
 
     public static final int ACCEPTABLE_DIFFERENCE_AMOUNT = 10;
 

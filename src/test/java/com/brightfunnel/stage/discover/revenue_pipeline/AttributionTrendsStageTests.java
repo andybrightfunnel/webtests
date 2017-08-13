@@ -12,7 +12,7 @@ import java.util.*;
 
 import static com.brightfunnel.pages.BasePage.COL_1;
 
-public class AttributionTrendsPageStageTests extends BaseStageTestCase {
+public class AttributionTrendsStageTests extends BaseStageTestCase {
 
 
     String[] revenueTypes = { "revenue", "pipeline"};

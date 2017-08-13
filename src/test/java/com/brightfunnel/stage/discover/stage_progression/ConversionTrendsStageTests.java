@@ -2,7 +2,7 @@ package com.brightfunnel.stage.discover.stage_progression;
 
 import com.brightfunnel.pages.Environments;
 import com.brightfunnel.pages.HomePage;
-import com.brightfunnel.pages.discover.stage_progression.CohortedWaterfallPage;
+import com.brightfunnel.pages.discover.stage_progression.ConversionTrendsPage;
 import com.brightfunnel.pages.discover.stage_progression.StagesSnapshotPage;
 import com.brightfunnel.stage.BaseStageTestCase;
 import org.junit.Test;
@@ -16,15 +16,16 @@ import java.util.Map;
 
 import static com.brightfunnel.pages.BasePage.COL_1;
 
-public class CohortedWaterfallPageStageTests extends BaseStageTestCase {
+public class ConversionTrendsStageTests extends BaseStageTestCase {
 
 
-    String[] cohorts = { "Q217", "Q117", "Q416", "Q316"};
-    int [] startStageSequences = { 1, 2, 3, 4 };
+    String []startingStages = { "MQL", "Opportunity"};
+    String [] endStages = {"Closed%20Won", "Demo", "MQL", "Opportunity"};
+
 
 
     /**
-     * Logs into stage, goes to attribution trends page, and for each combination of period, oppty types, etc, it will
+     * Logs into stage, goes to conversion trends page, and for each combination of period, oppty types, etc, it will
      * pull the data for the first NUM_ROWS rows and compare each to prod. It will fail if the differences between
      * the two environments is > ACCEPTABLE_AMOUNT
      *
@@ -38,12 +39,12 @@ public class CohortedWaterfallPageStageTests extends BaseStageTestCase {
         for(int i=0; i < orgIds.length; i++){
             int orgId = orgIds[i];
             try{
-                for(String cohort : cohorts)
-                    for(int startingStageSequence : startStageSequences){
-                    String result = testCohortedWaterFallPage(orgId, cohort, startingStageSequence);
-                    if(result.length() > 0)
-                        failedOrgs.add(result);
-                }
+                for(String startingStage : startingStages)
+                    for(String endingStage : endStages){
+                        String result = testConversionTrendsPage_dataTotals(orgId, startingStage, endingStage);
+                        if(result.length() > 0)
+                            failedOrgs.add(result);
+                    }
 
 
             }catch(Exception e){
@@ -62,11 +63,10 @@ public class CohortedWaterfallPageStageTests extends BaseStageTestCase {
 
     }
 
-    private String testCohortedWaterFallPage(int orgId, String cohort, int startingStageSequence) {
-        System.out.println("Starting " + CohortedWaterfallPage.PAGE_NAME +
-                " tests for orgId: " + orgId + " and cohort: " + cohort +
-                " and startingStageSequence: " + startingStageSequence);
+    private String testConversionTrendsPage_dataTotals(int orgId, String startingStage, String endingStage) {
 
+        System.out.println("Starting " + ConversionTrendsPage.PAGE_NAME + " tests. OrgId: " +
+                orgId + ", Starting stage: " + startingStage + ", Ending Stage: " + endingStage);
 
         // log into stage
         HomePage homePage = new HomePage(driver, Environments.STAGE);
@@ -74,22 +74,23 @@ public class CohortedWaterfallPageStageTests extends BaseStageTestCase {
         homePage.login(bfUsername, bfPassword);
         homePage.loginAsOrg(orgId);
 
-        // go to the CohortedWaterfall page on stage
-        CohortedWaterfallPage cohortedWaterfallPage = new CohortedWaterfallPage(driver, Environments.STAGE);
-        cohortedWaterfallPage.navigateTo();
+        // go to the conversion trends page
+        ConversionTrendsPage conversionTrendsPage = new ConversionTrendsPage(driver, Environments.STAGE);
+        conversionTrendsPage.navigateTo();
 
-        cohortedWaterfallPage.changeCohortAndSequence(cohort, startingStageSequence);
+        conversionTrendsPage.setStageSettings(startingStage, endingStage);
 
-        Map<String,Object> columnHeaderMap = cohortedWaterfallPage.getDataHeaderMap();
+        String dataTableName = "rev-waterfall-table";
+        String rowsXpath = String.format("id('%s')/tbody/tr", dataTableName);
+        // get column headers for data table
+        Map<String,Object> columnHeaderMap = conversionTrendsPage.getDataHeaderMap(dataTableName);
         Map<String,Map> stageDataMap = new HashMap<>();
-        List<WebElement> dataRows = driver.findElements(By.xpath("id('rev-waterfall-data')//tr[@class='ng-scope collaps-init pointer']"));
+        List<WebElement> dataRows = driver.findElements(By.xpath(rowsXpath));
 
         for(WebElement row : dataRows){
-            Map rowData = cohortedWaterfallPage.getDataRowMap(row);
+            Map rowData = conversionTrendsPage.getDataRowMap(row);
             String key = (String) rowData.get(COL_1);
 
-            if(key.length() == 0)
-                continue;
             stageDataMap.put(key, rowData);
         }
 
@@ -101,18 +102,19 @@ public class CohortedWaterfallPageStageTests extends BaseStageTestCase {
         homePage.login(bfUsername, bfPassword);
         homePage.loginAsOrg(orgId);
 
-        // go to the CohortedWaterfall page on stage
-        cohortedWaterfallPage = new CohortedWaterfallPage(driver, Environments.PROD);
-        cohortedWaterfallPage.navigateTo();
+        conversionTrendsPage = new ConversionTrendsPage(driver, Environments.PROD);
+        conversionTrendsPage.navigateTo();
 
-        cohortedWaterfallPage.changeCohortAndSequence(cohort, startingStageSequence);
+        conversionTrendsPage.setStageSettings(startingStage, endingStage);
 
+        // get column headers for data table
         Map<String,Map> prodDataMap = new HashMap<>();
-        List<WebElement> prodDataRows = driver.findElements(By.xpath("id('rev-waterfall-data')//tr[@class='ng-scope collaps-init pointer']"));
+        dataRows = driver.findElements(By.xpath(rowsXpath));
 
-        for(WebElement row : prodDataRows){
-            Map rowData = cohortedWaterfallPage.getDataRowMap(row);
+        for(WebElement row : dataRows){
+            Map rowData = conversionTrendsPage.getDataRowMap(row);
             String key = (String) rowData.get(COL_1);
+
             prodDataMap.put(key, rowData);
         }
 
@@ -141,5 +143,7 @@ public class CohortedWaterfallPageStageTests extends BaseStageTestCase {
 
 
         return comparisonResult.toString();
+
     }
+
 }

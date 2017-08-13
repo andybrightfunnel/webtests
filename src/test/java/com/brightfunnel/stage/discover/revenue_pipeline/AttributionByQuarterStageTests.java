@@ -18,7 +18,7 @@ import static com.brightfunnel.pages.BasePage.*;
 /**
  * Stage tests for the Attribution By Quarter Page.
  */
-public class AttributionByQuarterPageStageTests extends BaseStageTestCase {
+public class AttributionByQuarterStageTests extends BaseStageTestCase {
 
 
     String[] revenueTypes = { "booked", "pipeline"};
@@ -66,7 +66,7 @@ public class AttributionByQuarterPageStageTests extends BaseStageTestCase {
     }
 
     private String testAttributioneByQuarterPage(int orgId, String revenueType, String cohort) {
-        System.out.println("Starting stage test for attribution by quarter page totals for orgId: " + orgId +
+        System.out.println("Starting stage test for " + AttributionByQuarterPage.PAGE_NAME + " totals for orgId: " + orgId +
                 ", revenueType: " + revenueType + ", cohort: " + cohort);
 
         // log into stage
