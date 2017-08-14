@@ -108,7 +108,11 @@ public class BaseStageTestCase extends TestCase {
                     }
 
                 }else{
-                    if(!stageVal.toString().equals(prodVal.toString())){
+                    if(stageVal.toString().contains("%") && prodVal.toString().contains("%")){
+                        boolean compare = comparePercentages(stageVal.toString(), prodVal.toString());
+                        if(!compare)
+                            results.append(String.format(messageTemplate, header, stageRowData.get(COL_1), stageVal, prodVal));
+                    }else if(!stageVal.toString().equals(prodVal.toString())){
                         results.append(String.format(messageTemplate, header, stageRowData.get(COL_1), stageVal, prodVal));
                     }
                 }
@@ -117,6 +121,21 @@ public class BaseStageTestCase extends TestCase {
 
         }
         return results.toString();
+    }
+
+    private boolean comparePercentages(String stageVal, String prodVal) {
+
+        try{
+            Integer stage = Integer.parseInt(stageVal.replaceAll("[$,()%]", ""));
+            Integer prod = Integer.parseInt(stageVal.replaceAll("[$,()%]", ""));
+
+            if(Math.abs((prod - stage)) > maxDiffPercent){
+                return false;
+            }
+        }catch(Exception e){
+
+        }
+        return true;
     }
 
     public String[] getDataColumnMapKeys() {
@@ -139,6 +158,7 @@ public class BaseStageTestCase extends TestCase {
                     "--start-maximized",
                     "--disable-popup-blocking" }));
                 capabilities.setCapability("--start-maximized", false);
+
                 driver = new ChromeDriver(capabilities);
                 break;
             case "HtmlUnitDriver":
@@ -251,6 +271,10 @@ public class BaseStageTestCase extends TestCase {
                 comparisonResult.append(comparisonResult.append(
                         String.format(messageTemplate, orgId, columnHeader, rowName, result)));
         }
+
+        if(comparisonResult.length() > 0)
+            System.out.println("Failed Comparison for OrgId: " + orgId + " - " + comparisonResult);
+
         return comparisonResult;
     }
 }
