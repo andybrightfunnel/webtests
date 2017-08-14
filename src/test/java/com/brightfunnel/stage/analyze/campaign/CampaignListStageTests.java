@@ -3,7 +3,6 @@ package com.brightfunnel.stage.analyze.campaign;
 import com.brightfunnel.pages.Environments;
 import com.brightfunnel.pages.HomePage;
 import com.brightfunnel.pages.analyze.campaign.CampaignListPage;
-import com.brightfunnel.pages.discover.stage_progression.StagesSnapshotPage;
 import com.brightfunnel.pages.discover.stage_progression.VelocityOfCampaignGroupPage;
 import com.brightfunnel.stage.BaseStageTestCase;
 import org.junit.Test;
@@ -52,7 +51,7 @@ public class CampaignListStageTests extends BaseStageTestCase {
         }
 
         if(!failedOrgs.isEmpty()){
-            String output = StagesSnapshotPage.PAGE_NAME + " totals differ for at least one org. Results[" +
+            String output = CampaignListPage.PAGE_NAME + " totals differ for at least one org. Results[" +
                     listToString(failedOrgs);
             System.out.println(output);
             fail(output);

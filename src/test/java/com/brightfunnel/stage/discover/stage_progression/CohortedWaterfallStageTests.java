@@ -3,7 +3,6 @@ package com.brightfunnel.stage.discover.stage_progression;
 import com.brightfunnel.pages.Environments;
 import com.brightfunnel.pages.HomePage;
 import com.brightfunnel.pages.discover.stage_progression.CohortedWaterfallPage;
-import com.brightfunnel.pages.discover.stage_progression.StagesSnapshotPage;
 import com.brightfunnel.stage.BaseStageTestCase;
 import org.junit.Test;
 
@@ -49,7 +48,7 @@ public class CohortedWaterfallStageTests extends BaseStageTestCase {
         }
 
         if(!failedOrgs.isEmpty()){
-            String output = StagesSnapshotPage.PAGE_NAME + " totals differ for at least one org. Results[" +
+            String output = CohortedWaterfallPage.PAGE_NAME + " totals differ for at least one org. Results[" +
                     listToString(failedOrgs);
             System.out.println(output);
             fail(output);

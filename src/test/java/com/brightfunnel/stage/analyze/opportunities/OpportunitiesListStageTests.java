@@ -48,7 +48,7 @@ public class OpportunitiesListStageTests extends BaseStageTestCase {
         }
 
         if(!failedOrgs.isEmpty()){
-            String output = StagesSnapshotPage.PAGE_NAME + " totals differ for at least one org. Results[" +
+            String output = OpportunitiesListPage.PAGE_NAME + " totals differ for at least one org. Results[" +
                     listToString(failedOrgs);
             System.out.println(output);
             fail(output);
