@@ -22,17 +22,13 @@ public class HistoricalAveragesPage extends BasePage {
     }
 
     public void navigateTo(){
-        String baseUrl = getCurrentUrlBase();
 
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_WEEK, -7);
-        Date endDate = cal.getTime();
-        Date startDate = new Date();
-        String extraPath = String.format("&startDate=%s&endDate=%s", startDate.getTime(), endDate.getTime());
-        driver.get(baseUrl + basePath + extraPath);
-
-        // todo: add asserts to verify page loads correctly
+        driver.findElement(By.xpath("id('analyze-svg')")).click();
+        driver.findElement(
+                By.xpath("id('inner-nav-body')//div/ul/li/ng-include//span/a[contains(., 'Historical Averages')]"))
+                .click();
         waitForHeadingToLoad();
+
     }
 
 

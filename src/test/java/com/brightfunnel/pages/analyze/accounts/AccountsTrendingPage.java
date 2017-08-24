@@ -2,6 +2,7 @@ package com.brightfunnel.pages.analyze.accounts;
 
 import com.brightfunnel.pages.BasePage;
 import com.brightfunnel.pages.Environments;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.springframework.util.Assert;
 
@@ -31,15 +32,12 @@ public class AccountsTrendingPage extends BasePage{
     }
 
     public void navigateTo(){
-        String baseUrl = getCurrentUrlBase();
 
-
-        String dateParams = String.format("&startDate=%s&endDate=%s",startDate.getTime(), endDate.getTime());
-
-        driver.get(baseUrl + basePath + dateParams);
-
+        driver.findElement(By.xpath("id('analyze-svg')")).click();
+        driver.findElement(
+                By.xpath("id('inner-nav-body')//div/ul/li/ng-include//span/a[contains(., 'Accounts Trending')]"))
+                .click();
         waitForHeadingToLoad();
-        // todo: add asserts to verify page loads correctly
     }
 
     public void setFilters(String cohort, String metric) {

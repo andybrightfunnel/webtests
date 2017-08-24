@@ -30,12 +30,11 @@ public class AttributionByQuarterPage extends BasePage {
 
     public void navigateTo(){
 
-        String baseUrl = getCurrentUrlBase();
-
-        driver.get(baseUrl + basePath);
-        WebElement element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
-                until(ExpectedConditions.visibilityOfElementLocated(By.id("heading")));
-
+        driver.findElement(By.xpath("id('Combined-Shape')")).click();
+        driver.findElement(
+                By.xpath("id('inner-nav-body')//div/ul/li/ng-include//span/a[contains(., 'Attribution by Quarter')]"))
+                .click();
+        waitForHeadingToLoad();
     }
 
     public void changeAttributionModel(String revenueType, String cohort){

@@ -27,13 +27,11 @@ public class ConversionTrendsPage extends BasePage {
     }
 
     public void navigateTo(){
-        String baseUrl = getCurrentUrlBase();
-
-        driver.get(baseUrl + basePath);
-        WebElement element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
-                until(ExpectedConditions.visibilityOfElementLocated(By.id("heading")));
-
-        // todo: add asserts to verify page loads correctly
+        driver.findElement(By.xpath("id('Combined-Shape')")).click();
+        driver.findElement(
+                By.xpath("id('inner-nav-body')//div/ul/li/ng-include//span/a[contains(., 'Conversion Trends')]"))
+                .click();
+        waitForHeadingToLoad();
     }
 
     public void setStageSettings(String startingStage, String endingStage) {

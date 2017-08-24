@@ -25,19 +25,11 @@ public class AccountsListPage extends BasePage {
     }
 
     public void navigateTo(){
-        String baseUrl = getCurrentUrlBase();
-
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_WEEK, -7);
-        Date startDate = cal.getTime();
-        Date endDate = new Date();
-
-        String dateParams = String.format("&startDate=%s&endDate=%s",startDate.getTime(), endDate.getTime());
-
-        driver.get(baseUrl + basePath + dateParams);
-
+        driver.findElement(By.xpath("id('analyze-svg')")).click();
+        driver.findElement(
+                By.xpath("id('inner-nav-body')//div/ul/li/ng-include//span/a[contains(., 'Accounts List')]"))
+                .click();
         waitForHeadingToLoad();
-        // todo: add asserts to verify page loads correctly
     }
 
     public void setFilters(String cohort, String accountFilter) {

@@ -28,13 +28,11 @@ public class CohortedWaterfallPage extends BasePage {
     }
 
     public void navigateTo(){
-        String baseUrl = getCurrentUrlBase();
-
-        driver.get(baseUrl + basePath);
-
+        driver.findElement(By.xpath("id('Combined-Shape')")).click();
+        driver.findElement(
+                By.xpath("id('inner-nav-body')//div/ul/li/ng-include//span/a[contains(., 'Cohorted Waterfall')]"))
+                .click();
         waitForHeadingToLoad();
-
-        // todo: add asserts to verify page loads correctly
     }
 
     public void changeCohortAndSequence(String cohort, int startingStageSequence) {

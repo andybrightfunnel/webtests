@@ -24,13 +24,11 @@ public class CampaignsTrendingPage extends BasePage{
     }
 
     public void navigateTo(){
-        String baseUrl = getCurrentUrlBase();
-
-        driver.get(baseUrl + basePath );
-        WebElement element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
-                until(ExpectedConditions.visibilityOfElementLocated(By.id("heading")));
-
-        // todo: add asserts to verify page loads correctly
+        driver.findElement(By.xpath("id('analyze-svg')")).click();
+        driver.findElement(
+                By.xpath("id('inner-nav-body')//div/ul/li/ng-include//span/a[contains(., 'Campaigns Trending')]"))
+                .click();
+        waitForHeadingToLoad();
     }
 
 

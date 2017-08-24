@@ -2,6 +2,7 @@ package com.brightfunnel.pages.analyze.opportunities;
 
 import com.brightfunnel.pages.BasePage;
 import com.brightfunnel.pages.Environments;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 import java.util.Calendar;
@@ -22,25 +23,18 @@ public class OpportunitiesListPage extends BasePage {
 
     public void navigateTo(){
 
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_WEEK, 7); // 1 week into future
-        Date startDate = cal.getTime();
-        Date endDate = new Date();
-
-        String extraPath = String.format("&startDate=%s&endDate=%s", startDate.getTime(), endDate.getTime());
-        String currentBaseUrl = getCurrentUrlBase();
-        String targetUrl = currentBaseUrl + basePath + extraPath;
 
         int count = 0;
         while(count < 3) {
             try{
-                driver.get(targetUrl);
-
-                // todo: add asserts to verify page loads correctly
+                driver.findElement(By.xpath("id('analyze-svg')")).click();
+                driver.findElement(
+                        By.xpath("id('inner-nav-body')//div/ul/li/ng-include//span/a[contains(., 'Opportunities List')]"))
+                        .click();
                 waitForHeadingToLoad();
                 break;
             }catch(Exception e){
-                System.out.println("target url \n[" + targetUrl + "] \ntimed out, retrying up 3 times");
+                System.out.println("opportunities list page timed out, retrying up 3 times");
             }
             count++;
         }

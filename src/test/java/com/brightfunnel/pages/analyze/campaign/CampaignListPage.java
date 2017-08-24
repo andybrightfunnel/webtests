@@ -24,18 +24,11 @@ public class CampaignListPage extends BasePage {
     }
 
     public void navigateTo(){
-        String baseUrl = getCurrentUrlBase();
-
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_WEEK, -7);
-        Date endDate = cal.getTime();
-        Date startDate = new Date();
-        String extraPath = String.format("&startDate=%s&endDate=%s", startDate, endDate);
-        driver.get(baseUrl + basePath + extraPath);
-        WebElement element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
-                until(ExpectedConditions.visibilityOfElementLocated(By.id("heading")));
-
-        // todo: add asserts to verify page loads correctly
+        driver.findElement(By.xpath("id('analyze-svg')")).click();
+        driver.findElement(
+                By.xpath("id('inner-nav-body')//div/ul/li/ng-include//span/a[contains(., 'Campaigns List')]"))
+                .click();
+        waitForHeadingToLoad();
     }
 
     /**
