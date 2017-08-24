@@ -5,12 +5,12 @@ import com.brightfunnel.pages.HomePage;
 import com.brightfunnel.pages.discover.revenue_pipeline.AttributionTrendsPage;
 import com.brightfunnel.stage.BaseStageTestCase;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-import static com.brightfunnel.pages.BasePage.COL_1;
+import static org.junit.Assert.fail;
 
 public class AttributionTrendsStageTests extends BaseStageTestCase {
 

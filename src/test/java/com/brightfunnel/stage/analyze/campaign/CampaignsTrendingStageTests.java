@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.brightfunnel.pages.BasePage.COL_1;
+import static org.junit.Assert.fail;
 
 public class CampaignsTrendingStageTests extends BaseStageTestCase {
 

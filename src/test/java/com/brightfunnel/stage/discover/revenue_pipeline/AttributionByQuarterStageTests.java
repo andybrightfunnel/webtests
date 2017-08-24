@@ -12,6 +12,8 @@ import java.util.Map;
 
 import static com.brightfunnel.pages.BasePage.*;
 
+
+import static org.junit.Assert.fail;
 /**
  * Stage tests for the Attribution By Quarter Page.
  */

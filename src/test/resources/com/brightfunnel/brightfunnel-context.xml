@@ -7,8 +7,9 @@
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd">
 
+
+
     <!-- enable processing of annotations such as @Autowired and @Configuration -->
     <context:annotation-config/>
-    <context:property-placeholder location="classpath:/com/brightfunnel/config.properties"/>
-
+    <context:property-placeholder location="classpath:com/brightfunnel/config-test.properties"/>
 </beans>

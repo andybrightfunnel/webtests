@@ -3,13 +3,14 @@ package com.brightfunnel.stage.analyze.opportunities;
 import com.brightfunnel.pages.Environments;
 import com.brightfunnel.pages.HomePage;
 import com.brightfunnel.pages.analyze.opportunities.OpportunitiesListPage;
-import com.brightfunnel.pages.discover.stage_progression.StagesSnapshotPage;
 import com.brightfunnel.stage.BaseStageTestCase;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static org.junit.Assert.fail;
 
 public class OpportunitiesListStageTests extends BaseStageTestCase {
 

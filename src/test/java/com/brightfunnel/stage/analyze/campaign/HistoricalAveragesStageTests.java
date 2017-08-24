@@ -2,21 +2,15 @@ package com.brightfunnel.stage.analyze.campaign;
 
 import com.brightfunnel.pages.Environments;
 import com.brightfunnel.pages.HomePage;
-import com.brightfunnel.pages.analyze.campaign.CampaignListPage;
 import com.brightfunnel.pages.analyze.campaign.HistoricalAveragesPage;
-import com.brightfunnel.pages.discover.stage_progression.StagesSnapshotPage;
-import com.brightfunnel.pages.discover.stage_progression.VelocityOfCampaignGroupPage;
 import com.brightfunnel.stage.BaseStageTestCase;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.brightfunnel.pages.BasePage.COL_1;
+import static org.junit.Assert.fail;
 
 public class HistoricalAveragesStageTests extends BaseStageTestCase {
 

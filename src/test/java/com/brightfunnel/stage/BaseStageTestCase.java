@@ -1,8 +1,7 @@
 package com.brightfunnel.stage;
 
-import com.brightfunnel.ContextConfig;
+import com.brightfunnel.ApplicationContextConfig;
 import com.brightfunnel.pages.BasePage;
-import com.brightfunnel.pages.analyze.accounts.AccountsListPage;
 import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
@@ -15,7 +14,6 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.safari.SafariDriver;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,8 +34,8 @@ import static java.lang.Thread.sleep;
  * Base test case which will have some shared functionality with each stage test
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { ContextConfig.class })
-public class BaseStageTestCase extends TestCase {
+@ContextConfiguration("classpath:com/brightfunnel/brightfunnel-context.xml")
+public class BaseStageTestCase {
 
 
     public WebDriver driver;
@@ -52,11 +50,10 @@ public class BaseStageTestCase extends TestCase {
     public int[] orgIds;
 
     @Value("${webdriver.type}")
-    private String webDriverType;
+    public String webDriverType;
 
     @Value("${max.diff.percent}")
     public Double maxDiffPercent;
-
 
     @Before
     public void setUp() throws Exception {
@@ -171,9 +168,6 @@ public class BaseStageTestCase extends TestCase {
                 break;
             case "InternetExplorerDriver":
                 driver = new InternetExplorerDriver();
-                break;
-            case "GhostDriver":
-                driver = new PhantomJSDriver();
                 break;
             default:
                 driver = new ChromeDriver();

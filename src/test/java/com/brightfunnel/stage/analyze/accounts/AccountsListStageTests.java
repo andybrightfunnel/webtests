@@ -1,14 +1,21 @@
 package com.brightfunnel.stage.analyze.accounts;
 
+import com.brightfunnel.ApplicationContextConfig;
 import com.brightfunnel.pages.Environments;
 import com.brightfunnel.pages.HomePage;
 import com.brightfunnel.pages.analyze.accounts.AccountsListPage;
 import com.brightfunnel.stage.BaseStageTestCase;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static org.junit.Assert.fail;
 
 public class AccountsListStageTests extends BaseStageTestCase {
 

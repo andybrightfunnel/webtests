@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.Assert.fail;
+
 public class CohortedWaterfallStageTests extends BaseStageTestCase {
 
 
