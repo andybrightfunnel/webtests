@@ -40,8 +40,12 @@ public class CampaignListStageTests extends BaseStageTestCase {
                         for(String dataSet : dataSets){
 
                             String result = testCampaignListPage_dataTable(orgId, cohort, model, dataSet);
-                            if(result.length() > 0)
-                                failedOrgs.add(result);
+                            if(result.length() > 0) {
+                                String errorMsg = String.format("Org: %s, cohort: %s, model: %s, dataSet: %s. Result[%s]",
+                                        orgId, cohort, model, dataSet, result);
+                                failedOrgs.add(errorMsg);
+
+                            }
                 }
 
 
@@ -78,7 +82,7 @@ public class CampaignListStageTests extends BaseStageTestCase {
         campaignListPage.changeCohortAndModel(cohort, model, dataSet);
 
         // get column headers for data table
-        String headerXPath = "id('campaign-groups-tab')/table/tbody/tr";
+        String headerXPath = "id('campaign-groups-tab')/table/thead/tr/th";
         String dataXPath = "id('campaign-groups-tab')/table/tbody/tr";
 
         Map<String,Object> columnHeaderMap = getDataHeaderMap(headerXPath);
