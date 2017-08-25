@@ -25,11 +25,19 @@ public class AccountsListPage extends BasePage {
     }
 
     public void navigateTo(){
-        driver.findElement(By.xpath("id('analyze-svg')")).click();
-        driver.findElement(
-                By.xpath("id('inner-nav-body')//div/ul/li/ng-include//span/a[contains(., 'Accounts List')]"))
-                .click();
+        String baseUrl = getCurrentUrlBase();
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_WEEK, -7);
+        Date startDate = cal.getTime();
+        Date endDate = new Date();
+
+        String dateParams = String.format("&startDate=%s&endDate=%s",startDate.getTime(), endDate.getTime());
+
+        driver.get(baseUrl + basePath + dateParams);
+
         waitForHeadingToLoad();
+        // todo: add asserts to verify page loads correctly
     }
 
     public void setFilters(String cohort, String accountFilter) {
@@ -54,13 +62,21 @@ public class AccountsListPage extends BasePage {
     public void sortByColumnHeader(int headerCol) {
 
         String xpath = String.format(
-                "id('bottom-right-bottom')//div/table/thead/tr/th[%s]",
+                "id('bottom-right-bottom')//thead/tr/th[%s]",
                 headerCol);
 
-        driver.findElement(By.xpath(xpath)).click();
+        WebElement element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
+                until(ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath)));
+
+        try {
+            driver.findElement(By.xpath(xpath)).click();
+        }catch(Exception e){
+            driver.get(driver.getCurrentUrl());
+            driver.findElement(By.xpath(xpath)).click();
+        }
 
         String footerXpath = "id('bottom-right-bottom')/div//table/tfoot/tr[1]/td";
-        WebElement element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
+        element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
                 until(ExpectedConditions.visibilityOfElementLocated(By.xpath(footerXpath)));
     }
 }
