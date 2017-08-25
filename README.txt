@@ -17,7 +17,7 @@ Setup
 * Install maven:  brew install maven
 * Optionally install Intellij Community Edition IDE: https://www.jetbrains.com/idea/download/#section=mac
 * Add Chrome driver to your path if you with to use ChromeDriver instead of HtmlUnitDriver
-    export CHROME_DRIVER_HOME='/path-to-your-webtests-dir/drivers/chromedriver'
+    export CHROME_DRIVER_HOME='/path-to-your-webtests-dir/drivers'
     export PATH="$PATH:$CHROME_DRIVER_HOME"
 * Set your username, password, and targetOrgIds properties in test/resources/com/brightfunnel/config.proprties file
 
