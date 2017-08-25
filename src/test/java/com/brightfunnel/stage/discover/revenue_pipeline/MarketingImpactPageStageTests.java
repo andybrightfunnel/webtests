@@ -52,8 +52,11 @@ public class MarketingImpactPageStageTests extends BaseStageTestCase {
                     for(String opptyType : opptyTypes){
                         for(String modelType : modelTypes){
                             String result = testMarketingImpactTotalsMultiTab(orgId, periodType, opptyType, modelType);
-                            if(result.length() > 0)
-                                failedOrgs.add("[Org: " + orgId + "] - result: " + result);
+                            if(result.length() > 0) {
+                                String errorMsg = String.format("Org: %s, period: %s, opptyType: %s, modelType: %s. Result[%s]",
+                                        orgId, periodType, opptyType, modelType, result);
+                                failedOrgs.add(errorMsg);
+                            }
                         }
                     }
                 }
