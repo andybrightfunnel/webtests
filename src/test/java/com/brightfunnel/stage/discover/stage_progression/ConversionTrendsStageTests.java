@@ -43,8 +43,11 @@ public class ConversionTrendsStageTests extends BaseStageTestCase {
                 for(String startingStage : startingStages)
                     for(String endingStage : endStages){
                         String result = testConversionTrendsPage_dataTotals(orgId, startingStage, endingStage);
-                        if(result.length() > 0)
-                            failedOrgs.add(result);
+                        if(result.length() > 0) {
+                            String errorMsg = String.format("Org %s, startingStage: %s, endingStage: %s. Result[%s]",
+                                    orgId, startingStage, endingStage, result);
+                            failedOrgs.add(errorMsg);
+                        }
                     }
 
 
@@ -81,10 +84,10 @@ public class ConversionTrendsStageTests extends BaseStageTestCase {
 
         conversionTrendsPage.setStageSettings(startingStage, endingStage);
 
-        String headerXpath = "id('rev-waterfall-table')/table/thead/tr/th";
+        String headerXpath = "id('rev-waterfall-table')/thead/tr/th";
         String rowsXpath = "id('rev-waterfall-table')/tbody/tr";
         // get column headers for data table
-        Map<String,Object> columnHeaderMap = conversionTrendsPage.getDataHeaderMap(headerXpath);
+        Map<String,Object> columnHeaderMap = super.getDataHeaderMap(headerXpath);
         Map<String,Map> stageDataMap = new HashMap<>();
         List<WebElement> dataRows = driver.findElements(By.xpath(rowsXpath));
 
