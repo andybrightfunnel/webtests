@@ -75,7 +75,7 @@ public class AttributionTrendsStageTests extends BaseStageTestCase {
         attributionTrendsPage.navigateTo();
         attributionTrendsPage.changeAttributionModel(revenueType, attributionModel);
 
-        Map<String,Object> dataColumnHeaders = attributionTrendsPage.getDataTableHeaders();
+        Map<String,Object> dataColumnHeaders = this.getDataHeaderMap("id('revenueByChannelAcrossQtrsTable')/thead/tr/th");
         String rowsXpath = "id('revenueByChannelAcrossQtrsTable')/tbody/tr";
 
         Map<String,Map> stageDataMap = getTableDataMap(attributionTrendsPage, rowsXpath);
