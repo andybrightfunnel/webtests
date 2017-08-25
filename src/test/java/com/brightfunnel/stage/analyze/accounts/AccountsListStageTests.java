@@ -1,15 +1,10 @@
 package com.brightfunnel.stage.analyze.accounts;
 
-import com.brightfunnel.ApplicationContextConfig;
 import com.brightfunnel.pages.Environments;
 import com.brightfunnel.pages.HomePage;
 import com.brightfunnel.pages.analyze.accounts.AccountsListPage;
 import com.brightfunnel.stage.BaseStageTestCase;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +31,11 @@ public class AccountsListStageTests extends BaseStageTestCase {
                 for(String cohort : cohorts)
                     for(String accountFilter : accountFilters){
                             String result = testAccountsFilterPage_dataTable(orgId, cohort, accountFilter);
-                            if(result.length() > 0)
-                                failedOrgs.add(result);
+                            if(result.length() > 0) {
+                                String msg = String.format("Org %s, cohort: %s, accountFilter: %s. Result[%s]",
+                                        orgId, cohort, accountFilter, result);
+                                failedOrgs.add(msg);
+                            }
                         }
 
 
