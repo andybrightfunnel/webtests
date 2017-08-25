@@ -32,8 +32,13 @@ public class AccountsTrendingStageTests extends BaseStageTestCase {
                 for(String cohort : cohorts)
                     for(String metric : metrics){
                         String result = testAccountsTrendingPage_dataTable(orgId, cohort, metric);
-                        if(result.length() > 0)
-                            failedOrgs.add(result);
+                        if(result.length() > 0) {
+
+                            String errorMsg = String.format("Org %s, cohort: %s, metric: %s. Result[%s]",
+                                    orgId, cohort, metric, result);
+                            failedOrgs.add(errorMsg);
+
+                        }
                     }
 
 

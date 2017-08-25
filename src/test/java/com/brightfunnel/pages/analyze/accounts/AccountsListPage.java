@@ -71,7 +71,7 @@ public class AccountsListPage extends BasePage {
         try {
             driver.findElement(By.xpath(xpath)).click();
         }catch(Exception e){
-            driver.get(driver.getCurrentUrl());
+            driver.switchTo().defaultContent();
             driver.findElement(By.xpath(xpath)).click();
         }
 
