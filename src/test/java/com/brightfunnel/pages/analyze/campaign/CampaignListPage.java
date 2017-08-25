@@ -24,11 +24,18 @@ public class CampaignListPage extends BasePage {
     }
 
     public void navigateTo(){
-        driver.findElement(By.xpath("id('analyze-svg')")).click();
-        driver.findElement(
-                By.xpath("id('inner-nav-body')//div/ul/li/ng-include//span/a[contains(., 'Campaigns List')]"))
-                .click();
-        waitForHeadingToLoad();
+        String baseUrl = getCurrentUrlBase();
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_WEEK, -7);
+        Date endDate = cal.getTime();
+        Date startDate = new Date();
+        String extraPath = String.format("&startDate=%s&endDate=%s", startDate, endDate);
+        driver.get(baseUrl + basePath + extraPath);
+        WebElement element = (new WebDriverWait(driver, TIME_OUT_IN_SECONDS)).
+                until(ExpectedConditions.visibilityOfElementLocated(By.id("heading")));
+
+        // todo: add asserts to verify page loads correctly
     }
 
     /**
@@ -85,7 +92,7 @@ public class CampaignListPage extends BasePage {
 
         String targetPath =
                 String.format("#/analyze/campaigns/list-analysis/campaign-groups?cohort=%s&dataSet=%s&chart=ranged.sourced.leads&model=%s&ty=c&co=alpha&t&grp=no-list&startDate=%s&endDate=%s",
-                        cohort, model, dataSet, startDate, endDate);
+                        cohort, dataSet, model, startDate, endDate);
         driver.get(baseUrl + targetPath);
 
         waitForHeadingToLoad();
